@@ -8,6 +8,7 @@ import '../../core/money.dart';
 import '../../core/providers.dart';
 import '../../core/widgets/pickers.dart';
 import '../accounts/account_type_ui.dart';
+import '../mascot/piggy_mascot.dart';
 
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
@@ -89,19 +90,10 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Placeholder de la mascota (se reemplazará por Rive/Lottie).
-        const Text(
-              '🐷',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 96),
-            )
-            .animate(onPlay: (c) => c.repeat(reverse: true))
-            .moveY(
-              begin: -8,
-              end: 8,
-              duration: 900.ms,
-              curve: Curves.easeInOut,
-            ),
+        const Center(child: PiggyMascot(size: 170))
+            .animate()
+            .scaleXY(begin: 0.4, duration: 700.ms, curve: Curves.elasticOut)
+            .fadeIn(duration: 300.ms),
         const SizedBox(height: 24),
         Text(
           '¡Hola! Soy Alcancía',
@@ -157,12 +149,16 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           const SizedBox(height: 24),
           DropdownButtonFormField<String>(
             initialValue: _currency,
+            isExpanded: true,
             decoration: const InputDecoration(labelText: 'Moneda'),
             items: [
               for (final c in supportedCurrencies)
                 DropdownMenuItem(
                   value: c.code,
-                  child: Text('${c.code} · ${c.name}'),
+                  child: Text(
+                    '${c.code} · ${c.name}',
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
             ],
             onChanged: (v) => setState(() => _currency = v ?? _currency),

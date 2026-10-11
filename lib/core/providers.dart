@@ -14,12 +14,32 @@ final databaseProvider = Provider<AppDatabase>((ref) {
   return db;
 });
 
-final accountsProvider = StreamProvider<List<Account>>(
-  (ref) => ref.watch(databaseProvider).watchAccounts(),
+final accountsWithBalanceProvider = StreamProvider<List<AccountWithBalance>>(
+  (ref) => ref.watch(databaseProvider).watchAccountsWithBalance(),
 );
 
 final categoriesProvider = StreamProvider.family<List<Category>, CategoryKind>(
   (ref, kind) => ref.watch(databaseProvider).watchCategories(kind),
+);
+
+final movementsProvider = StreamProvider.autoDispose
+    .family<List<MovementDetails>, MovementFilter>(
+      (ref, filter) => ref.watch(databaseProvider).watchMovements(filter),
+    );
+
+/// Mes que se está viendo en Inicio y Movimientos (primer día del mes).
+class SelectedMonthNotifier extends Notifier<DateTime> {
+  @override
+  DateTime build() {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month);
+  }
+
+  void shift(int months) => state = DateTime(state.year, state.month + months);
+}
+
+final selectedMonthProvider = NotifierProvider<SelectedMonthNotifier, DateTime>(
+  SelectedMonthNotifier.new,
 );
 
 const _kUserName = 'user_name';

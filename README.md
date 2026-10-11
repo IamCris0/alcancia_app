@@ -16,7 +16,9 @@ App móvil **100 % offline** para gestionar tu dinero: ingresos, gastos, presupu
 - [x] Scaffold Flutter, tema Material 3 claro/oscuro
 - [x] Onboarding: pide tu nombre al iniciar
 - [x] Base de datos local (Drift/SQLite), cuentas y categorías
-- [ ] Transacciones (ingresos, gastos, transferencias) e historial
+- [x] Movimientos (ingresos, gastos, transferencias), historial y saldos reales
+- [x] Inicio con gráficas y mascota animada
+- [ ] Presupuestos, rachas, XP y logros
 
 ## Desarrollo
 Requisitos: [Flutter](https://docs.flutter.dev/get-started/install) estable.
