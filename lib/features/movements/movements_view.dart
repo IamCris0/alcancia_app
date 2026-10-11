@@ -13,6 +13,8 @@ import '../../core/ui/month_switcher.dart';
 import '../../core/ui/routes.dart';
 import '../../core/motion/circular_reveal.dart';
 import '../../core/motion/skeleton.dart';
+import '../gamification/celebration_dialog.dart';
+import '../gamification/gamification_service.dart';
 import '../mascot/mascot_providers.dart';
 import '../mascot/mascot_view.dart';
 import 'add_movement_page.dart';
@@ -29,18 +31,22 @@ String dayLabel(DateTime day) {
 }
 
 /// Abre la pantalla de movimiento: con revelado circular desde [origin]
-/// (el botón "+") o subiendo desde abajo al editar.
+/// (el botón "+") o subiendo desde abajo al editar. Al volver muestra las
+/// celebraciones (nivel, logros) que haya generado.
 Future<void> openMovement(
   BuildContext context, {
   MovementDetails? existing,
   Offset? origin,
-}) {
+}) async {
   final page = AddMovementPage(existing: existing);
-  return Navigator.of(context).push(
+  final result = await Navigator.of(context).push<GamificationResult>(
     origin == null
         ? slideUpRoute(page)
         : circularRevealRoute(page, center: origin),
   );
+  if (result != null && result.hasCelebrations && context.mounted) {
+    await showCelebrations(context, result);
+  }
 }
 
 /// Historial del mes: resumen, filtros, búsqueda y lista agrupada por día.
@@ -371,13 +377,11 @@ class _EmptyState extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final species = ref.watch(mascotProvider).species;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
       child: Column(
         children: [
-          MascotView(
-            species: species,
+          MyMascot(
             mood: filtering ? MascotMood.neutral : MascotMood.sleeping,
             size: 120,
           ),

@@ -29,7 +29,6 @@ class HeroCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final mascot = ref.watch(mascotProvider);
-    final reactKey = ref.watch(mascotEventProvider);
     const white = Colors.white;
 
     return Container(
@@ -102,12 +101,7 @@ class HeroCard extends ConsumerWidget {
                           ],
                         ),
                       ),
-                      MascotView(
-                        species: mascot.species,
-                        mood: mood,
-                        size: 104,
-                        reactKey: reactKey,
-                      ),
+                      MyMascot(mood: mood, size: 104, reactToEvents: true),
                     ],
                   ),
                   const SizedBox(height: 12),

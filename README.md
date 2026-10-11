@@ -18,7 +18,9 @@ App móvil **100 % offline** para gestionar tu dinero: ingresos, gastos, presupu
 - [x] Base de datos local (Drift/SQLite), cuentas y categorías
 - [x] Movimientos (ingresos, gastos, transferencias), historial y saldos reales
 - [x] Inicio con gráficas y mascota animada
-- [ ] Presupuestos, rachas, XP y logros
+- [x] 4 mascotas animadas, intro y motion graphics
+- [x] Presupuestos, rachas, XP, niveles, accesorios y logros
+- [ ] Metas de ahorro, recurrentes y deudas
 
 ## Desarrollo
 Requisitos: [Flutter](https://docs.flutter.dev/get-started/install) estable.

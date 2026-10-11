@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 /// Texto que aparece letra a letra. El espacio final se reserva desde el
@@ -36,18 +38,23 @@ class _TypewriterTextState extends State<TypewriterText>
     if (old.text != widget.text) _start();
   }
 
-  Future<void> _start() async {
+  Timer? _delay;
+
+  void _start() {
+    _delay?.cancel();
     _c.duration = widget.charDuration * widget.text.length;
     _c.value = 0;
     if (widget.delay > Duration.zero) {
-      await Future<void>.delayed(widget.delay);
-      if (!mounted) return;
+      // Timer (no Future.delayed) para poder cancelarlo al desmontarse.
+      _delay = Timer(widget.delay, _c.forward);
+    } else {
+      _c.forward();
     }
-    _c.forward();
   }
 
   @override
   void dispose() {
+    _delay?.cancel();
     _c.dispose();
     super.dispose();
   }

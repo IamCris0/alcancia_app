@@ -23,7 +23,10 @@ final categoryKindProvider =
     );
 
 class CategoriesView extends ConsumerWidget {
-  const CategoriesView({super.key});
+  const CategoriesView({super.key, this.standalone = false});
+
+  /// Abierta como pantalla propia (desde Perfil): muestra botón de volver.
+  final bool standalone;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,6 +42,7 @@ class CategoriesView extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
             child: Row(
               children: [
+                if (standalone) const BackButton(),
                 Expanded(
                   child: Text(
                     'Categorías',

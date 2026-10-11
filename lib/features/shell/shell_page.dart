@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../accounts/accounts_view.dart';
-import '../categories/categories_view.dart';
+import '../budgets/budgets_view.dart';
 import '../dashboard/dashboard_view.dart';
+import '../gamification/celebration_dialog.dart';
+import '../gamification/gamification_providers.dart';
 import '../movements/movements_view.dart';
+import '../profile/profile_view.dart';
 import 'floating_nav_bar.dart';
 
 /// Estructura principal: 4 pestañas + botón central para nuevo movimiento.
 /// Al cambiar de pestaña el contenido se desliza en la dirección del cambio.
-class ShellPage extends StatefulWidget {
+class ShellPage extends ConsumerStatefulWidget {
   const ShellPage({super.key});
 
   @override
-  State<ShellPage> createState() => _ShellPageState();
+  ConsumerState<ShellPage> createState() => _ShellPageState();
 }
 
-class _ShellPageState extends State<ShellPage> {
+class _ShellPageState extends ConsumerState<ShellPage> {
   int _tab = 0;
   int _direction = 1;
 
@@ -26,13 +29,21 @@ class _ShellPageState extends State<ShellPage> {
       Icons.receipt_long_rounded,
       'Movimientos',
     ),
-    NavItem(
-      Icons.account_balance_wallet_outlined,
-      Icons.account_balance_wallet_rounded,
-      'Cuentas',
-    ),
-    NavItem(Icons.category_outlined, Icons.category_rounded, 'Categorías'),
+    NavItem(Icons.pie_chart_outline_rounded, Icons.pie_chart_rounded, 'Metas'),
+    NavItem(Icons.person_outline_rounded, Icons.person_rounded, 'Perfil'),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Al abrir: premiar meses cerrados y logros pendientes.
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final result = await ref.read(gamificationServiceProvider).syncOnStart();
+      if (mounted && result.hasCelebrations) {
+        await showCelebrations(context, result);
+      }
+    });
+  }
 
   void _select(int tab) {
     if (tab == _tab) return;
@@ -45,10 +56,13 @@ class _ShellPageState extends State<ShellPage> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      DashboardView(onSeeAll: () => _select(1)),
+      DashboardView(
+        onSeeAll: () => _select(1),
+        onOpenProfile: () => _select(3),
+      ),
       const MovementsView(),
-      const AccountsView(),
-      const CategoriesView(),
+      const BudgetsView(),
+      const ProfileView(),
     ];
     return Scaffold(
       extendBody: true,

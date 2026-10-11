@@ -134,7 +134,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               opacity: dark ? 0.22 : 0.16,
             ),
           ),
-          const Positioned.fill(child: FloatingCoins(count: 8, opacity: 0.35)),
+          // Discretas: no deben competir con el texto ni los botones.
+          const Positioned.fill(child: FloatingCoins(count: 6, opacity: 0.18)),
           SafeArea(
             child: Column(
               children: [

@@ -12,6 +12,8 @@ import '../../core/providers.dart';
 import '../../core/theme.dart';
 import '../../core/ui/pressable.dart';
 import '../../core/widgets/pickers.dart';
+import '../gamification/gamification_providers.dart';
+import '../gamification/gamification_service.dart';
 import '../mascot/mascot_providers.dart';
 import 'amount_input.dart';
 import 'keypad.dart';
@@ -39,6 +41,7 @@ class _AddMovementPageState extends ConsumerState<AddMovementPage> {
   String? _error;
   int _shakes = 0;
   bool _saved = false;
+  GamificationResult _result = GamificationResult.none;
 
   bool get _editing => widget.existing != null;
 
@@ -104,19 +107,35 @@ class _AddMovementPageState extends ConsumerState<AddMovementPage> {
       date: Value(_date),
     );
     final db = ref.read(databaseProvider);
-    if (_editing) {
-      await db.updateMovement(widget.existing!.movement.id, changes);
-    } else {
-      await db.addMovement(changes);
-    }
+    final id = _editing
+        ? widget.existing!.movement.id
+        : await db.addMovement(changes);
+    if (_editing) await db.updateMovement(id, changes);
+    final saved = await (db.select(
+      db.movements,
+    )..where((m) => m.id.equals(id))).getSingle();
+
+    // XP, racha, logros y alertas de presupuesto.
+    final result = await ref
+        .read(gamificationServiceProvider)
+        .onMovementSaved(
+          saved,
+          isNew: !_editing,
+          previousAmount: widget.existing?.movement.amount ?? 0,
+        );
 
     HapticFeedback.mediumImpact();
     if (!mounted) return;
     // La mascota del inicio también reaccionará al volver.
     ref.read(mascotEventProvider.notifier).bump();
-    setState(() => _saved = true);
-    await Future<void>.delayed(const Duration(milliseconds: 1300));
-    if (mounted) Navigator.of(context).pop();
+    setState(() {
+      _saved = true;
+      _result = result;
+    });
+    await Future<void>.delayed(
+      Duration(milliseconds: result.alert != null ? 1900 : 1400),
+    );
+    if (mounted) Navigator.of(context).pop(result);
   }
 
   Future<void> _delete() async {
@@ -304,7 +323,8 @@ class _AddMovementPageState extends ConsumerState<AddMovementPage> {
               ],
             ),
           ),
-          if (_saved) SuccessOverlay(type: _type, color: color),
+          if (_saved)
+            SuccessOverlay(type: _type, color: color, result: _result),
         ],
       ),
     );

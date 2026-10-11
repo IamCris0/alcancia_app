@@ -5,6 +5,27 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 ## [Unreleased]
 
 ### Added
+- Fase 3 (gamificación y presupuestos):
+  - Presupuestos mensuales general y por categoría, con anillo y barras
+    animadas, gasto diario sugerido y alertas al 80 % y al pasarse.
+  - Rachas diarias con llama animada, semana visual, mejor racha y
+    congeladores (uno por cada 7 días registrados, máximo 2).
+  - XP con libro de eventos (sin premios dobles, tope diario por registrar),
+    niveles con títulos y barra de progreso.
+  - 15 logros con medallas, detalle y celebración con confeti.
+  - Accesorios para la mascota por nivel: moño, gafas, gorro de fiesta y
+    corona; se ponen solos al desbloquearlos.
+  - Pestañas nuevas: Metas (presupuestos) y Perfil (mascota, racha, logros,
+    ajustes). Cuentas y categorías se abren desde Perfil o el inicio.
+  - Premio al abrir la app por meses cerrados dentro del presupuesto o en verde.
+
+### Changed
+- La app ahora se llama **PlataPets** (paquete `platapets`, ID
+  `com.platapets.app`).
+- Rendimiento: sin desenfoque en vivo en la barra, menos repintados y el
+  teclado numérico ya no reconstruye toda la pantalla.
+
+### Added (anteriores)
 - Motion v2:
   - 4 mascotas elegibles (cerdito, gatito, conejito, panda) con mirada,
     parpadeo, orejas y cola animadas, ánimo "celebrando" y reacción al

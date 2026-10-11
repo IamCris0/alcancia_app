@@ -81,6 +81,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
               children: [
                 MascotView(
                       species: mascot.species,
+                      accessory: mascot.accessory,
                       size: 170,
                       reactKey: _react,
                       interactive: false,

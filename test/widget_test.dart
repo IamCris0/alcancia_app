@@ -22,6 +22,17 @@ Future<void> _settle(WidgetTester tester) async {
   }
 }
 
+/// Avanza en pasos cortos (I/O real + reloj falso) hasta que aparezca
+/// [finder], con un tope para no colgar el test.
+Future<void> _pumpUntil(WidgetTester tester, Finder finder) async {
+  for (var i = 0; i < 60 && finder.evaluate().isEmpty; i++) {
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 10)),
+    );
+    await tester.pump(const Duration(milliseconds: 16));
+  }
+}
+
 Future<(AppDatabase, SharedPreferences)> _launch(
   WidgetTester tester,
   Map<String, Object> initial, {
@@ -48,7 +59,9 @@ Future<(AppDatabase, SharedPreferences)> _launch(
 
 Future<void> _shutdown(WidgetTester tester, AppDatabase db) async {
   await tester.pumpWidget(const SizedBox());
-  await tester.pump(Duration.zero);
+  // flutter_animate programa sus retrasos con timers no cancelables:
+  // se deja correr el reloj para que terminen.
+  await tester.pump(const Duration(seconds: 1));
   await tester.runAsync(db.close);
 }
 
@@ -133,14 +146,24 @@ void main() {
     expect(find.text(r'$12'), findsOneWidget);
 
     await tester.tap(find.text('Guardar'));
-    await tester.pump(const Duration(milliseconds: 600));
+    // Guardar + XP/logros encadenan muchas consultas con I/O real.
+    await _pumpUntil(tester, find.text('Gasto registrado'));
     expect(find.text('Gasto registrado'), findsOneWidget);
+    expect(find.text('+35 XP'), findsOneWidget);
     // Confirmación + cierre de la pantalla + animación del saldo.
     await _settle(tester);
     await _settle(tester);
 
+    // Primer movimiento: se desbloquea el logro "Primer paso".
+    expect(find.text('LOGRO DESBLOQUEADO'), findsOneWidget);
+    expect(find.text('Primer paso'), findsOneWidget);
+    await tester.tap(find.text('¡Genial!'));
+    await _settle(tester);
+
     expect(find.text('Nuevo movimiento'), findsNothing);
     expect(find.bySemanticsLabel(r'$38.00'), findsOneWidget);
+    // Racha de 1 día y XP ganada.
+    expect(find.text('1 día'), findsOneWidget);
     // "Recientes" está al final del inicio: hay que desplazarse.
     await tester.scrollUntilVisible(
       find.text(r'−$12.00'),
@@ -168,8 +191,8 @@ void main() {
     final (db, _) = await _launch(tester, {'user_name': 'Ana'});
     for (final (label, title) in [
       ('Movimientos', 'Movimientos'),
-      ('Cuentas', 'Cuentas'),
-      ('Categorías', 'Categorías'),
+      ('Metas', 'Presupuestos'),
+      ('Perfil', 'Logros'),
     ]) {
       await tester.tap(find.bySemanticsLabel(label).first);
       await _settle(tester);
