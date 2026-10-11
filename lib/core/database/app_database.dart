@@ -36,7 +36,7 @@ const _defaultCategories = <_SeedCategory>[
 @DriftDatabase(tables: [Accounts, Categories, Movements])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
-    : super(executor ?? driftDatabase(name: 'alcancia'));
+    : super(executor ?? driftDatabase(name: 'platapets'));
 
   @override
   int get schemaVersion => 2;

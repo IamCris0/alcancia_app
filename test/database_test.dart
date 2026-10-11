@@ -1,4 +1,4 @@
-import 'package:alcancia_app/core/database/app_database.dart';
+import 'package:platapets/core/database/app_database.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';

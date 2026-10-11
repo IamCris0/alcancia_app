@@ -1,4 +1,4 @@
-import 'package:alcancia_app/core/money.dart';
+import 'package:platapets/core/money.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

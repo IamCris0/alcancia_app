@@ -61,7 +61,8 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   @override
   Widget build(BuildContext context) {
     final mascot = ref.watch(mascotProvider);
-    const title = 'Alcancía';
+    // "Plata" en blanco y "Pets" en dorado.
+    const title = 'PlataPets';
     return Scaffold(
       backgroundColor: splashBackground,
       body: Stack(
@@ -99,8 +100,10 @@ class _SplashPageState extends ConsumerState<SplashPage> {
                     for (final (i, ch) in title.split('').indexed)
                       Text(
                             ch,
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: i < 5
+                                  ? Colors.white
+                                  : const Color(0xFFFFC233),
                               fontSize: 40,
                               fontWeight: FontWeight.w800,
                               letterSpacing: -1,
@@ -118,7 +121,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                      'Tu dinero, bajo control',
+                      'Tu dinero, con compañía',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.75),
                         fontSize: 15,

@@ -1,8 +1,8 @@
-import 'package:alcancia_app/app.dart';
-import 'package:alcancia_app/core/database/app_database.dart';
-import 'package:alcancia_app/core/providers.dart';
-import 'package:alcancia_app/features/movements/keypad.dart';
-import 'package:alcancia_app/features/splash/splash_page.dart';
+import 'package:platapets/app.dart';
+import 'package:platapets/core/database/app_database.dart';
+import 'package:platapets/core/providers.dart';
+import 'package:platapets/features/movements/keypad.dart';
+import 'package:platapets/features/splash/splash_page.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +39,7 @@ Future<(AppDatabase, SharedPreferences)> _launch(
         databaseProvider.overrideWithValue(db),
         showSplashProvider.overrideWithValue(splash),
       ],
-      child: const AlcanciaApp(),
+      child: const PlataPetsApp(),
     ),
   );
   if (!splash) await _settle(tester);
@@ -61,12 +61,12 @@ void main() {
   testWidgets('la intro animada da paso al onboarding', (tester) async {
     final (db, _) = await _launch(tester, {}, splash: true);
     await tester.pump(const Duration(milliseconds: 1600));
-    expect(find.text('Tu dinero, bajo control'), findsOneWidget);
+    expect(find.text('Tu dinero, con compañía'), findsOneWidget);
 
     await tester.pump(const Duration(milliseconds: 1000));
     await tester.pump(const Duration(milliseconds: 800));
     expect(find.text('¿Cómo te llamas?'), findsOneWidget);
-    expect(find.text('Tu dinero, bajo control'), findsNothing);
+    expect(find.text('Tu dinero, con compañía'), findsNothing);
 
     await _shutdown(tester, db);
   });

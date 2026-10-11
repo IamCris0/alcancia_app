@@ -1,4 +1,4 @@
-package com.alcancia.alcancia_app
+package com.platapets.app
 
 import io.flutter.embedding.android.FlutterActivity
 

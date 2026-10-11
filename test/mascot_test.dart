@@ -1,7 +1,7 @@
-import 'package:alcancia_app/core/providers.dart';
-import 'package:alcancia_app/features/mascot/mascot_mood.dart';
-import 'package:alcancia_app/features/mascot/mascot_providers.dart';
-import 'package:alcancia_app/features/mascot/mascot_view.dart';
+import 'package:platapets/core/providers.dart';
+import 'package:platapets/features/mascot/mascot_mood.dart';
+import 'package:platapets/features/mascot/mascot_providers.dart';
+import 'package:platapets/features/mascot/mascot_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

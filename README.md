@@ -1,4 +1,4 @@
-﻿# 🐷 Alcancía
+# 🐷 PlataPets
 
 App móvil **100 % offline** para gestionar tu dinero: ingresos, gastos, presupuestos y metas, con una mascota que reacciona a tus finanzas, rachas diarias y animaciones. Hecha con Flutter.
 
