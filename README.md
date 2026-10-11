@@ -1,4 +1,4 @@
-# 🐷 Alcancía
+﻿# 🐷 Alcancía
 
 App móvil **100 % offline** para gestionar tu dinero: ingresos, gastos, presupuestos y metas, con una mascota que reacciona a tus finanzas, rachas diarias y animaciones. Hecha con Flutter.
 
@@ -15,7 +15,8 @@ App móvil **100 % offline** para gestionar tu dinero: ingresos, gastos, presupu
 ## Estado actual
 - [x] Scaffold Flutter, tema Material 3 claro/oscuro
 - [x] Onboarding: pide tu nombre al iniciar
-- [ ] Base de datos local, cuentas y transacciones
+- [x] Base de datos local (Drift/SQLite), cuentas y categorías
+- [ ] Transacciones (ingresos, gastos, transferencias) e historial
 
 ## Desarrollo
 Requisitos: [Flutter](https://docs.flutter.dev/get-started/install) estable.
@@ -32,3 +33,4 @@ Lee [CONTRIBUTING.md](CONTRIBUTING.md). Usamos Conventional Commits y PRs hacia 
 
 ## Licencia
 [MIT](LICENSE)
+
