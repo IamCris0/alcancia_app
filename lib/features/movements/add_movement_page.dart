@@ -30,7 +30,7 @@ class AddMovementPage extends ConsumerStatefulWidget {
 
 class _AddMovementPageState extends ConsumerState<AddMovementPage> {
   late MovementType _type;
-  late AmountInput _amount;
+  late final ValueNotifier<AmountInput> _amount;
   int? _categoryId;
   int? _accountId;
   int? _toAccountId;
@@ -47,7 +47,7 @@ class _AddMovementPageState extends ConsumerState<AddMovementPage> {
     super.initState();
     final m = widget.existing?.movement;
     _type = m?.type ?? MovementType.expense;
-    _amount = AmountInput.fromCents(m?.amount ?? 0);
+    _amount = ValueNotifier(AmountInput.fromCents(m?.amount ?? 0));
     _categoryId = m?.categoryId;
     _accountId = m?.accountId;
     _toAccountId = m?.toAccountId;
@@ -58,6 +58,7 @@ class _AddMovementPageState extends ConsumerState<AddMovementPage> {
   @override
   void dispose() {
     _note.dispose();
+    _amount.dispose();
     super.dispose();
   }
 
@@ -79,7 +80,7 @@ class _AddMovementPageState extends ConsumerState<AddMovementPage> {
   }
 
   Future<void> _save() async {
-    final cents = _amount.cents;
+    final cents = _amount.value.cents;
     if (cents <= 0) return _fail('Escribe un monto');
     if (_accountId == null) return _fail('Elige una cuenta');
     if (_type == MovementType.transfer) {
@@ -280,15 +281,16 @@ class _AddMovementPageState extends ConsumerState<AddMovementPage> {
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                   child: Column(
                     children: [
+                      // El monto vive en un ValueNotifier: teclear solo
+                      // reconstruye el número, no toda la pantalla.
                       Keypad(
-                        onKey: (k) => setState(() {
-                          _amount = _amount.press(k);
-                          _error = null;
-                        }),
+                        onKey: (k) {
+                          _amount.value = _amount.value.press(k);
+                          if (_error != null) setState(() => _error = null);
+                        },
                         onBackspace: () =>
-                            setState(() => _amount = _amount.backspace()),
-                        onClear: () =>
-                            setState(() => _amount = const AmountInput()),
+                            _amount.value = _amount.value.backspace(),
+                        onClear: () => _amount.value = const AmountInput(),
                       ),
                       const SizedBox(height: 8),
                       _SaveButton(
@@ -340,28 +342,32 @@ class _AddMovementPageState extends ConsumerState<AddMovementPage> {
 
   Widget _amountDisplay(BuildContext context, String symbol, Color color) {
     final theme = Theme.of(context);
-    final text = Text(
-      _amount.display(symbol),
-      key: ValueKey(_amount.text),
-      maxLines: 1,
-      style: theme.textTheme.displaySmall?.copyWith(
-        color: _amount.isEmpty
-            ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)
-            : color,
-      ),
-    );
     Widget display = SizedBox(
       height: 72,
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: text
-            .animate(key: ValueKey(_amount.text))
-            .scaleXY(
-              begin: 0.94,
-              end: 1,
-              duration: 160.ms,
-              curve: Curves.easeOutBack,
-            ),
+      child: ValueListenableBuilder<AmountInput>(
+        valueListenable: _amount,
+        builder: (context, amount, _) => FittedBox(
+          fit: BoxFit.scaleDown,
+          child:
+              Text(
+                    amount.display(symbol),
+                    maxLines: 1,
+                    style: theme.textTheme.displaySmall?.copyWith(
+                      color: amount.isEmpty
+                          ? theme.colorScheme.onSurfaceVariant.withValues(
+                              alpha: 0.5,
+                            )
+                          : color,
+                    ),
+                  )
+                  .animate(key: ValueKey(amount.text))
+                  .scaleXY(
+                    begin: 0.94,
+                    end: 1,
+                    duration: 160.ms,
+                    curve: Curves.easeOutBack,
+                  ),
+        ),
       ),
     );
     if (_shakes > 0) {

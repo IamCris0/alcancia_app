@@ -61,19 +61,6 @@ class HeroCard extends ConsumerWidget {
             const Positioned.fill(
               child: FloatingCoins(count: 9, opacity: 0.55, seed: 11),
             ),
-            // Brillo diagonal que cruza la tarjeta cada pocos segundos.
-            Positioned.fill(
-              child: IgnorePointer(
-                child: const SizedBox.expand()
-                    .animate(onPlay: (c) => c.repeat())
-                    .shimmer(
-                      delay: 2500.ms,
-                      duration: 1600.ms,
-                      angle: 0.6,
-                      color: white.withValues(alpha: 0.18),
-                    ),
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(22, 22, 10, 20),
               child: Column(

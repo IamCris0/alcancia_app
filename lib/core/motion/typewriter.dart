@@ -61,23 +61,25 @@ class _TypewriterTextState extends State<TypewriterText>
     return Semantics(
       label: widget.text,
       child: ExcludeSemantics(
-        child: AnimatedBuilder(
-          animation: _c,
-          builder: (context, _) {
-            final n = (widget.text.length * _c.value).round();
-            return Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(text: widget.text.substring(0, n)),
-                  TextSpan(
-                    text: widget.text.substring(n),
-                    style: const TextStyle(color: Colors.transparent),
-                  ),
-                ],
-              ),
-              style: style,
-            );
-          },
+        child: RepaintBoundary(
+          child: AnimatedBuilder(
+            animation: _c,
+            builder: (context, _) {
+              final n = (widget.text.length * _c.value).round();
+              return Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(text: widget.text.substring(0, n)),
+                    TextSpan(
+                      text: widget.text.substring(n),
+                      style: const TextStyle(color: Colors.transparent),
+                    ),
+                  ],
+                ),
+                style: style,
+              );
+            },
+          ),
         ),
       ),
     );
