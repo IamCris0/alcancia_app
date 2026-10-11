@@ -7,6 +7,7 @@ import '../movements/movements_view.dart';
 import 'floating_nav_bar.dart';
 
 /// Estructura principal: 4 pestañas + botón central para nuevo movimiento.
+/// Al cambiar de pestaña el contenido se desliza en la dirección del cambio.
 class ShellPage extends StatefulWidget {
   const ShellPage({super.key});
 
@@ -16,6 +17,7 @@ class ShellPage extends StatefulWidget {
 
 class _ShellPageState extends State<ShellPage> {
   int _tab = 0;
+  int _direction = 1;
 
   static const _items = [
     NavItem(Icons.home_outlined, Icons.home_rounded, 'Inicio'),
@@ -32,10 +34,18 @@ class _ShellPageState extends State<ShellPage> {
     NavItem(Icons.category_outlined, Icons.category_rounded, 'Categorías'),
   ];
 
+  void _select(int tab) {
+    if (tab == _tab) return;
+    setState(() {
+      _direction = tab > _tab ? 1 : -1;
+      _tab = tab;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final pages = [
-      DashboardView(onSeeAll: () => setState(() => _tab = 1)),
+      DashboardView(onSeeAll: () => _select(1)),
       const MovementsView(),
       const AccountsView(),
       const CategoriesView(),
@@ -43,26 +53,30 @@ class _ShellPageState extends State<ShellPage> {
     return Scaffold(
       extendBody: true,
       body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 360),
         switchInCurve: Curves.easeOutCubic,
         switchOutCurve: Curves.easeInCubic,
-        transitionBuilder: (child, anim) => FadeTransition(
-          opacity: anim,
-          child: SlideTransition(
-            position: Tween(
-              begin: const Offset(0, 0.02),
-              end: Offset.zero,
-            ).animate(anim),
-            child: child,
-          ),
-        ),
+        transitionBuilder: (child, anim) {
+          final incoming = child.key == ValueKey(_tab);
+          final dx = (incoming ? 0.08 : -0.08) * _direction;
+          return FadeTransition(
+            opacity: anim,
+            child: SlideTransition(
+              position: Tween(
+                begin: Offset(dx, 0),
+                end: Offset.zero,
+              ).animate(anim),
+              child: child,
+            ),
+          );
+        },
         child: KeyedSubtree(key: ValueKey(_tab), child: pages[_tab]),
       ),
       bottomNavigationBar: FloatingNavBar(
         items: _items,
         selected: _tab,
-        onSelected: (i) => setState(() => _tab = i),
-        onAdd: () => openMovement(context),
+        onSelected: _select,
+        onAdd: (center) => openMovement(context, origin: center),
       ),
     );
   }

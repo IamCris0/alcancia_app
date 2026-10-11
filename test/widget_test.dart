@@ -2,6 +2,7 @@ import 'package:alcancia_app/app.dart';
 import 'package:alcancia_app/core/database/app_database.dart';
 import 'package:alcancia_app/core/providers.dart';
 import 'package:alcancia_app/features/movements/keypad.dart';
+import 'package:alcancia_app/features/splash/splash_page.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
@@ -21,10 +22,11 @@ Future<void> _settle(WidgetTester tester) async {
   }
 }
 
-Future<AppDatabase> _launch(
+Future<(AppDatabase, SharedPreferences)> _launch(
   WidgetTester tester,
-  Map<String, Object> initial,
-) async {
+  Map<String, Object> initial, {
+  bool splash = false,
+}) async {
   await tester.binding.setSurfaceSize(const Size(430, 932));
   addTearDown(() => tester.binding.setSurfaceSize(null));
   SharedPreferences.setMockInitialValues(initial);
@@ -35,12 +37,13 @@ Future<AppDatabase> _launch(
       overrides: [
         sharedPrefsProvider.overrideWithValue(prefs),
         databaseProvider.overrideWithValue(db),
+        showSplashProvider.overrideWithValue(splash),
       ],
       child: const AlcanciaApp(),
     ),
   );
-  await _settle(tester);
-  return db;
+  if (!splash) await _settle(tester);
+  return (db, prefs);
 }
 
 Future<void> _shutdown(WidgetTester tester, AppDatabase db) async {
@@ -55,10 +58,23 @@ Finder _key(String k) =>
 void main() {
   setUpAll(() => initializeDateFormatting('es'));
 
-  testWidgets('onboarding: nombre, primera cuenta y llegada al inicio', (
+  testWidgets('la intro animada da paso al onboarding', (tester) async {
+    final (db, _) = await _launch(tester, {}, splash: true);
+    await tester.pump(const Duration(milliseconds: 1600));
+    expect(find.text('Tu dinero, bajo control'), findsOneWidget);
+
+    await tester.pump(const Duration(milliseconds: 1000));
+    await tester.pump(const Duration(milliseconds: 800));
+    expect(find.text('¿Cómo te llamas?'), findsOneWidget);
+    expect(find.text('Tu dinero, bajo control'), findsNothing);
+
+    await _shutdown(tester, db);
+  });
+
+  testWidgets('onboarding: nombre, mascota, primera cuenta y llegada', (
     tester,
   ) async {
-    final db = await _launch(tester, {});
+    final (db, prefs) = await _launch(tester, {});
 
     expect(find.text('¿Cómo te llamas?'), findsOneWidget);
     await tester.enterText(find.byType(TextField), 'Cris');
@@ -66,20 +82,33 @@ void main() {
     await tester.tap(find.text('Continuar'));
     await _settle(tester);
 
+    // Carrusel de mascotas: deslizar elige al gatito y sugiere su nombre.
+    expect(find.text('Elige tu compañero'), findsOneWidget);
+    expect(find.text('Chanchi'), findsOneWidget);
+    await tester.drag(find.byType(PageView), const Offset(-300, 0));
+    await _settle(tester);
+    expect(find.text('Michi'), findsOneWidget);
+    await tester.tap(find.text('Continuar'));
+    await _settle(tester);
+
     expect(find.text('Nombre de la cuenta'), findsOneWidget);
     await tester.enterText(find.byType(TextField).last, '100');
     await tester.tap(find.text('Empezar'));
     await _settle(tester);
+    expect(find.text('¡Todo listo, Cris!'), findsOneWidget);
+    await _settle(tester);
 
     expect(find.textContaining('Cris'), findsOneWidget);
     expect(find.text('Saldo total'), findsOneWidget);
-    expect(find.text(r'$100.00'), findsOneWidget);
+    expect(find.bySemanticsLabel(r'$100.00'), findsOneWidget);
+    expect(prefs.getString('mascot_species'), 'cat');
+    expect(prefs.getString('mascot_name'), 'Michi');
 
     await _shutdown(tester, db);
   });
 
   testWidgets('registrar un gasto actualiza el saldo', (tester) async {
-    final db = await _launch(tester, {'user_name': 'Ana'});
+    final (db, _) = await _launch(tester, {'user_name': 'Ana'});
     await tester.runAsync(
       () => db.addAccount(
         AccountsCompanion.insert(
@@ -92,7 +121,7 @@ void main() {
       ),
     );
     await _settle(tester);
-    expect(find.text(r'$50.00'), findsOneWidget);
+    expect(find.bySemanticsLabel(r'$50.00'), findsOneWidget);
 
     await tester.tap(find.bySemanticsLabel('Nuevo movimiento'));
     await _settle(tester);
@@ -104,12 +133,14 @@ void main() {
     expect(find.text(r'$12'), findsOneWidget);
 
     await tester.tap(find.text('Guardar'));
-    // Confirmación (~1 s) + cierre de la pantalla + conteo del saldo.
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.text('Gasto registrado'), findsOneWidget);
+    // Confirmación + cierre de la pantalla + animación del saldo.
     await _settle(tester);
     await _settle(tester);
 
     expect(find.text('Nuevo movimiento'), findsNothing);
-    expect(find.text(r'$38.00'), findsOneWidget);
+    expect(find.bySemanticsLabel(r'$38.00'), findsOneWidget);
     // "Recientes" está al final del inicio: hay que desplazarse.
     await tester.scrollUntilVisible(
       find.text(r'−$12.00'),
@@ -122,7 +153,7 @@ void main() {
   });
 
   testWidgets('guardar sin monto muestra un error', (tester) async {
-    final db = await _launch(tester, {'user_name': 'Ana'});
+    final (db, _) = await _launch(tester, {'user_name': 'Ana'});
     await tester.tap(find.bySemanticsLabel('Nuevo movimiento'));
     await _settle(tester);
 
@@ -130,6 +161,20 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     expect(find.text('Escribe un monto'), findsOneWidget);
 
+    await _shutdown(tester, db);
+  });
+
+  testWidgets('cambiar de pestaña muestra cada sección', (tester) async {
+    final (db, _) = await _launch(tester, {'user_name': 'Ana'});
+    for (final (label, title) in [
+      ('Movimientos', 'Movimientos'),
+      ('Cuentas', 'Cuentas'),
+      ('Categorías', 'Categorías'),
+    ]) {
+      await tester.tap(find.bySemanticsLabel(label).first);
+      await _settle(tester);
+      expect(find.text(title), findsWidgets);
+    }
     await _shutdown(tester, db);
   });
 }

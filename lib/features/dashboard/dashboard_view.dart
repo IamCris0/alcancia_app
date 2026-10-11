@@ -9,7 +9,7 @@ import '../../core/ui/animated_money.dart';
 import '../../core/ui/app_card.dart';
 import '../../core/ui/month_switcher.dart';
 import '../mascot/mascot_mood.dart';
-import '../mascot/piggy_mascot.dart';
+import 'hero_card.dart';
 import '../movements/movement_tile.dart';
 import '../movements/movements_view.dart';
 import 'charts.dart';
@@ -65,7 +65,7 @@ class DashboardView extends ConsumerWidget {
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
         children: [
           enter(
-            _HeroCard(
+            HeroCard(
               greeting: '${greeting()}, $name',
               total: total,
               mood: mood,
@@ -140,7 +140,7 @@ class DashboardView extends ConsumerWidget {
                         for (final d in recent)
                           MovementTile(
                             d,
-                            onTap: () => openMovement(context, d),
+                            onTap: () => openMovement(context, existing: d),
                           ),
                       ],
                     ),
@@ -149,140 +149,6 @@ class DashboardView extends ConsumerWidget {
         ],
       ),
     );
-  }
-}
-
-class _HeroCard extends StatelessWidget {
-  const _HeroCard({
-    required this.greeting,
-    required this.total,
-    required this.mood,
-  });
-
-  final String greeting;
-  final int total;
-  final MascotMood mood;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    const white = Colors.white;
-    return Container(
-      decoration: BoxDecoration(
-        gradient: AppColors.heroGradient,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.brand.withValues(alpha: 0.35),
-            blurRadius: 30,
-            offset: const Offset(0, 14),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
-        child: Stack(
-          children: [
-            // Círculos decorativos con un leve movimiento continuo.
-            Positioned(
-              right: -40,
-              top: -50,
-              child: _Blob(size: 170, opacity: 0.12),
-            ),
-            Positioned(
-              left: -30,
-              bottom: -60,
-              child: _Blob(size: 140, opacity: 0.08),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(22, 22, 12, 22),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          greeting,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: white.withValues(alpha: 0.9),
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 14),
-                        Text(
-                          'Saldo total',
-                          style: theme.textTheme.labelLarge?.copyWith(
-                            color: white.withValues(alpha: 0.75),
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerLeft,
-                          child: AnimatedMoney(
-                            total,
-                            duration: const Duration(milliseconds: 1200),
-                            style: theme.textTheme.headlineLarge?.copyWith(
-                              color: white,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: white.withValues(alpha: 0.18),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            moodMessage(mood),
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              color: white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  PiggyMascot(mood: mood, size: 104),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Blob extends StatelessWidget {
-  const _Blob({required this.size, required this.opacity});
-
-  final double size;
-  final double opacity;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white.withValues(alpha: opacity),
-          ),
-        )
-        .animate(onPlay: (c) => c.repeat(reverse: true))
-        .scaleXY(
-          begin: 0.92,
-          end: 1.08,
-          duration: 4.seconds,
-          curve: Curves.easeInOut,
-        );
   }
 }
 

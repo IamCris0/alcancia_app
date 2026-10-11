@@ -9,6 +9,7 @@ import '../../core/money.dart';
 import '../../core/providers.dart';
 import '../../core/theme.dart';
 import '../../core/widgets/pickers.dart';
+import 'animated_donut.dart';
 import 'month_summary.dart';
 
 /// Dona de gastos por categoría con leyenda y barras de porcentaje.
@@ -54,35 +55,12 @@ class _ExpenseDonutState extends ConsumerState<ExpenseDonut> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  PieChart(
-                    PieChartData(
-                      sectionsSpace: 3,
-                      centerSpaceRadius: 62,
-                      startDegreeOffset: -90,
-                      pieTouchData: PieTouchData(
-                        touchCallback: (event, response) {
-                          final i =
-                              response?.touchedSection?.touchedSectionIndex ??
-                              -1;
-                          if (!event.isInterestedForInteractions) {
-                            if (_touched != -1) setState(() => _touched = -1);
-                            return;
-                          }
-                          if (i != _touched) setState(() => _touched = i);
-                        },
-                      ),
-                      sections: [
-                        for (final (i, s) in slices.indexed)
-                          PieChartSectionData(
-                            value: s.$2.toDouble(),
-                            color: s.$3,
-                            radius: i == _touched ? 30 : 22,
-                            showTitle: false,
-                          ),
-                      ],
-                    ),
-                    duration: const Duration(milliseconds: 600),
-                    curve: Curves.easeOutCubic,
+                  AnimatedDonut(
+                    slices: [
+                      for (final s in slices) DonutSlice(s.$2.toDouble(), s.$3),
+                    ],
+                    selected: _touched,
+                    onSelected: (i) => setState(() => _touched = i),
                   ),
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 200),
@@ -192,91 +170,124 @@ class DailyExpenseChart extends ConsumerWidget {
     final days = isCurrent ? now.day : daily.length;
     final maxY = daily.take(days).fold<int>(0, max).toDouble();
 
+    final chart = LineChart(
+      LineChartData(
+        minX: 1,
+        maxX: daily.length.toDouble(),
+        minY: 0,
+        maxY: maxY == 0 ? 1 : maxY * 1.25,
+        gridData: FlGridData(
+          show: true,
+          drawVerticalLine: false,
+          horizontalInterval: maxY == 0 ? 1 : maxY * 1.25 / 3,
+          getDrawingHorizontalLine: (_) => FlLine(
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+            strokeWidth: 1,
+            dashArray: [4, 4],
+          ),
+        ),
+        borderData: FlBorderData(show: false),
+        titlesData: FlTitlesData(
+          leftTitles: const AxisTitles(),
+          rightTitles: const AxisTitles(),
+          topTitles: const AxisTitles(),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              interval: 7,
+              reservedSize: 24,
+              getTitlesWidget: (value, meta) => SideTitleWidget(
+                meta: meta,
+                child: Text(
+                  value.toInt().toString(),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        lineTouchData: LineTouchData(
+          touchTooltipData: LineTouchTooltipData(
+            getTooltipColor: (_) => theme.colorScheme.inverseSurface,
+            getTooltipItems: (spots) => [
+              for (final s in spots)
+                LineTooltipItem(
+                  'Día ${s.x.toInt()}\n${formatMoney(s.y.round(), currency)}',
+                  TextStyle(
+                    color: theme.colorScheme.onInverseSurface,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+            ],
+          ),
+        ),
+        lineBarsData: [
+          LineChartBarData(
+            spots: [
+              for (var i = 0; i < days; i++)
+                FlSpot(i + 1.0, daily[i].toDouble()),
+            ],
+            isCurved: true,
+            curveSmoothness: 0.3,
+            preventCurveOverShooting: true,
+            color: AppColors.brand,
+            barWidth: 3,
+            isStrokeCapRound: true,
+            // Solo un punto destacado en el último día con datos.
+            dotData: FlDotData(
+              checkToShowDot: (spot, _) => spot.x == days.toDouble(),
+              getDotPainter: (_, _, _, _) => FlDotCirclePainter(
+                radius: 5,
+                color: Colors.white,
+                strokeWidth: 3,
+                strokeColor: AppColors.brand,
+              ),
+            ),
+            belowBarData: BarAreaData(
+              show: true,
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  AppColors.brand.withValues(alpha: 0.30),
+                  AppColors.brand.withValues(alpha: 0.0),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeOutCubic,
+    );
+    // La línea se "dibuja" de izquierda a derecha al aparecer.
     return SizedBox(
       height: 170,
-      child: LineChart(
-        LineChartData(
-          minX: 1,
-          maxX: daily.length.toDouble(),
-          minY: 0,
-          maxY: maxY == 0 ? 1 : maxY * 1.25,
-          gridData: FlGridData(
-            show: true,
-            drawVerticalLine: false,
-            horizontalInterval: maxY == 0 ? 1 : maxY * 1.25 / 3,
-            getDrawingHorizontalLine: (_) => FlLine(
-              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
-              strokeWidth: 1,
-              dashArray: [4, 4],
-            ),
-          ),
-          borderData: FlBorderData(show: false),
-          titlesData: FlTitlesData(
-            leftTitles: const AxisTitles(),
-            rightTitles: const AxisTitles(),
-            topTitles: const AxisTitles(),
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                interval: 7,
-                reservedSize: 24,
-                getTitlesWidget: (value, meta) => SideTitleWidget(
-                  meta: meta,
-                  child: Text(
-                    value.toInt().toString(),
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          lineTouchData: LineTouchData(
-            touchTooltipData: LineTouchTooltipData(
-              getTooltipColor: (_) => theme.colorScheme.inverseSurface,
-              getTooltipItems: (spots) => [
-                for (final s in spots)
-                  LineTooltipItem(
-                    'Día ${s.x.toInt()}\n${formatMoney(s.y.round(), currency)}',
-                    TextStyle(
-                      color: theme.colorScheme.onInverseSurface,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          lineBarsData: [
-            LineChartBarData(
-              spots: [
-                for (var i = 0; i < days; i++)
-                  FlSpot(i + 1.0, daily[i].toDouble()),
-              ],
-              isCurved: true,
-              curveSmoothness: 0.3,
-              preventCurveOverShooting: true,
-              color: AppColors.brand,
-              barWidth: 3,
-              isStrokeCapRound: true,
-              dotData: const FlDotData(show: false),
-              belowBarData: BarAreaData(
-                show: true,
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    AppColors.brand.withValues(alpha: 0.30),
-                    AppColors.brand.withValues(alpha: 0.0),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeOutCubic,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0, end: 1),
+        duration: MediaQuery.disableAnimationsOf(context)
+            ? Duration.zero
+            : const Duration(milliseconds: 1300),
+        curve: Curves.easeInOutCubic,
+        builder: (context, t, child) =>
+            ClipRect(clipper: _RevealClipper(t), child: child),
+        child: chart,
       ),
     );
   }
+}
+
+class _RevealClipper extends CustomClipper<Rect> {
+  _RevealClipper(this.t);
+
+  final double t;
+
+  @override
+  Rect getClip(Size size) =>
+      Rect.fromLTWH(0, -20, size.width * t + 8, size.height + 40);
+
+  @override
+  bool shouldReclip(_RevealClipper old) => old.t != t;
 }

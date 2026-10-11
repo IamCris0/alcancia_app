@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/motion/rolling_money.dart';
+import '../../core/motion/skeleton.dart';
 import '../../core/providers.dart';
 import '../../core/theme.dart';
 import '../../core/ui/animated_money.dart';
@@ -21,7 +23,7 @@ class AccountsView extends ConsumerWidget {
     return SafeArea(
       bottom: false,
       child: accounts.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const SkeletonList(),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (list) {
           final total = list.fold<int>(0, (sum, a) => sum + a.balance);
@@ -59,10 +61,14 @@ class AccountsView extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    AnimatedMoney(
-                      total,
-                      style: theme.textTheme.headlineLarge?.copyWith(
-                        color: Colors.white,
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: RollingMoney(
+                        total,
+                        style: theme.textTheme.headlineLarge?.copyWith(
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 4),

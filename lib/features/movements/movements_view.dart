@@ -11,7 +11,10 @@ import '../../core/ui/animated_money.dart';
 import '../../core/ui/app_card.dart';
 import '../../core/ui/month_switcher.dart';
 import '../../core/ui/routes.dart';
-import '../mascot/piggy_mascot.dart';
+import '../../core/motion/circular_reveal.dart';
+import '../../core/motion/skeleton.dart';
+import '../mascot/mascot_providers.dart';
+import '../mascot/mascot_view.dart';
 import 'add_movement_page.dart';
 import 'movement_tile.dart';
 
@@ -25,9 +28,20 @@ String dayLabel(DateTime day) {
   return s[0].toUpperCase() + s.substring(1);
 }
 
-Future<void> openMovement(BuildContext context, [MovementDetails? existing]) =>
-    Navigator.of(context)
-        .push(slideUpRoute(AddMovementPage(existing: existing)));
+/// Abre la pantalla de movimiento: con revelado circular desde [origin]
+/// (el botón "+") o subiendo desde abajo al editar.
+Future<void> openMovement(
+  BuildContext context, {
+  MovementDetails? existing,
+  Offset? origin,
+}) {
+  final page = AddMovementPage(existing: existing);
+  return Navigator.of(context).push(
+    origin == null
+        ? slideUpRoute(page)
+        : circularRevealRoute(page, center: origin),
+  );
+}
 
 /// Historial del mes: resumen, filtros, búsqueda y lista agrupada por día.
 class MovementsView extends ConsumerStatefulWidget {
@@ -195,14 +209,7 @@ class _MovementsViewState extends ConsumerState<MovementsView> {
             ),
           ),
           ...filtered.when(
-            loading: () => [
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.all(48),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-              ),
-            ],
+            loading: () => [const SliverToBoxAdapter(child: SkeletonList())],
             error: (e, _) => [
               SliverToBoxAdapter(child: Center(child: Text('Error: $e'))),
             ],
@@ -294,7 +301,7 @@ class _MovementsViewState extends ConsumerState<MovementsView> {
                               ),
                               child: MovementTile(
                                 d,
-                                onTap: () => openMovement(context, d),
+                                onTap: () => openMovement(context, existing: d),
                               ),
                             ),
                         ],
@@ -356,19 +363,21 @@ class _MiniStat extends StatelessWidget {
   }
 }
 
-class _EmptyState extends StatelessWidget {
+class _EmptyState extends ConsumerWidget {
   const _EmptyState({required this.filtering});
 
   final bool filtering;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final species = ref.watch(mascotProvider).species;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
       child: Column(
         children: [
-          PiggyMascot(
+          MascotView(
+            species: species,
             mood: filtering ? MascotMood.neutral : MascotMood.sleeping,
             size: 120,
           ),

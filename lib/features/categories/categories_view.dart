@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/database/app_database.dart';
+import '../../core/motion/skeleton.dart';
 import '../../core/providers.dart';
 import '../../core/ui/app_card.dart';
 import '../../core/widgets/pickers.dart';
@@ -76,7 +77,7 @@ class CategoriesView extends ConsumerWidget {
           ),
           Expanded(
             child: categories.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const SkeletonList(count: 3, itemHeight: 120),
               error: (e, _) => Center(child: Text('Error: $e')),
               data: (list) => GridView.builder(
                 key: ValueKey(kind),

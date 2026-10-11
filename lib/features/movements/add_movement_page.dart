@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,9 +12,11 @@ import '../../core/providers.dart';
 import '../../core/theme.dart';
 import '../../core/ui/pressable.dart';
 import '../../core/widgets/pickers.dart';
+import '../mascot/mascot_providers.dart';
 import 'amount_input.dart';
 import 'keypad.dart';
 import 'movement_type_ui.dart';
+import 'success_overlay.dart';
 
 /// Crear o editar un movimiento. Pantalla completa con teclado propio.
 class AddMovementPage extends ConsumerStatefulWidget {
@@ -111,8 +111,10 @@ class _AddMovementPageState extends ConsumerState<AddMovementPage> {
 
     HapticFeedback.mediumImpact();
     if (!mounted) return;
+    // La mascota del inicio también reaccionará al volver.
+    ref.read(mascotEventProvider.notifier).bump();
     setState(() => _saved = true);
-    await Future<void>.delayed(const Duration(milliseconds: 950));
+    await Future<void>.delayed(const Duration(milliseconds: 1300));
     if (mounted) Navigator.of(context).pop();
   }
 
@@ -300,7 +302,7 @@ class _AddMovementPageState extends ConsumerState<AddMovementPage> {
               ],
             ),
           ),
-          if (_saved) _SuccessOverlay(color: color),
+          if (_saved) SuccessOverlay(type: _type, color: color),
         ],
       ),
     );
@@ -718,87 +720,4 @@ class _SaveButton extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Confirmación: un check que "explota" con monedas alrededor.
-class _SuccessOverlay extends StatelessWidget {
-  const _SuccessOverlay({required this.color});
-
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    final rng = Random(7);
-    return Positioned.fill(
-      child: ColoredBox(
-        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.85),
-        child: Center(
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              for (var i = 0; i < 12; i++)
-                _coin(i, rng)
-                    .animate(delay: 120.ms)
-                    .fadeIn(duration: 80.ms)
-                    .move(
-                      begin: Offset.zero,
-                      end: Offset.fromDirection(
-                        i * pi / 6 + rng.nextDouble() * 0.3,
-                        80 + rng.nextDouble() * 50,
-                      ),
-                      duration: 600.ms,
-                      curve: Curves.easeOutCubic,
-                    )
-                    .fadeOut(delay: 350.ms, duration: 300.ms),
-              Container(
-                    width: 96,
-                    height: 96,
-                    decoration: BoxDecoration(
-                      color: color,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: color.withValues(alpha: 0.45),
-                          blurRadius: 30,
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.check_rounded,
-                      color: Colors.white,
-                      size: 56,
-                    ),
-                  )
-                  .animate()
-                  .scaleXY(
-                    begin: 0,
-                    end: 1,
-                    duration: 450.ms,
-                    curve: Curves.elasticOut,
-                  )
-                  .then()
-                  .shimmer(duration: 400.ms),
-              Padding(
-                padding: const EdgeInsets.only(top: 150),
-                child: Text(
-                  '¡Guardado!',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.4),
-              ),
-            ],
-          ),
-        ),
-      ).animate().fadeIn(duration: 150.ms),
-    );
-  }
-
-  Widget _coin(int i, Random rng) => Container(
-    width: 14 + rng.nextDouble() * 6,
-    height: 14 + rng.nextDouble() * 6,
-    decoration: BoxDecoration(
-      color: i.isEven ? AppColors.savings : color,
-      shape: BoxShape.circle,
-      border: Border.all(color: Colors.white, width: 2),
-    ),
-  );
 }
