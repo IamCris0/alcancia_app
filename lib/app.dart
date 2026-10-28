@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/providers.dart';
 import 'core/theme.dart';
+import 'core/motion/iris_reveal.dart';
+import 'core/theme_settings.dart';
 import 'features/onboarding/onboarding_page.dart';
 import 'features/security/lock_screen.dart';
 import 'features/shell/shell_page.dart';
@@ -22,6 +24,16 @@ class _PlataPetsAppState extends ConsumerState<PlataPetsApp> {
   @override
   Widget build(BuildContext context) {
     final name = ref.watch(userNameProvider);
+    final themeSettings = ref.watch(themeSettingsProvider);
+    // La paleta se aplica antes de construir el tema.
+    AppColors.use(themeSettings.palette);
+    ref.listen(themeSettingsProvider, (prev, next) {
+      if (prev?.palette != next.palette) {
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => rebuildAllChildren(context),
+        );
+      }
+    });
     final showSplash = ref.watch(showSplashProvider) && !_splashDone;
 
     final Widget content;
@@ -41,6 +53,7 @@ class _PlataPetsAppState extends ConsumerState<PlataPetsApp> {
       debugShowCheckedModeBanner: false,
       theme: buildTheme(Brightness.light),
       darkTheme: buildTheme(Brightness.dark),
+      themeMode: themeSettings.mode,
       locale: const Locale('es'),
       supportedLocales: const [Locale('es'), Locale('en')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
@@ -48,15 +61,20 @@ class _PlataPetsAppState extends ConsumerState<PlataPetsApp> {
         duration: const Duration(milliseconds: 650),
         switchInCurve: Curves.easeOutCubic,
         switchOutCurve: Curves.easeInCubic,
-        // La pantalla nueva entra con un leve zoom mientras la anterior se
-        // desvanece.
-        transitionBuilder: (child, anim) => FadeTransition(
-          opacity: anim,
-          child: ScaleTransition(
-            scale: Tween(begin: 1.06, end: 1.0).animate(anim),
-            child: child,
-          ),
-        ),
+        // Apertura tipo "iris": la intro se acerca y se desvanece mientras
+        // la app aparece desde un círculo que crece en el centro.
+        transitionBuilder: (child, anim) {
+          if (child.key == const ValueKey('splash')) {
+            return FadeTransition(
+              opacity: anim,
+              child: ScaleTransition(
+                scale: Tween(begin: 1.35, end: 1.0).animate(anim),
+                child: child,
+              ),
+            );
+          }
+          return IrisReveal(animation: anim, child: child);
+        },
         child: content,
       ),
     );

@@ -50,7 +50,7 @@ class _PlansViewState extends State<PlansView> {
           const SizedBox(height: 8),
           Expanded(
             child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 320),
+              duration: const Duration(milliseconds: 220),
               switchInCurve: Curves.easeOutCubic,
               switchOutCurve: Curves.easeInCubic,
               transitionBuilder: (child, anim) {

@@ -238,11 +238,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
         children: [
           Positioned.fill(
             child: AuroraBackground(
-              colors: const [
-                AppColors.brand,
-                AppColors.pink,
-                Color(0xFF4DABF7),
-              ],
+              colors: [AppColors.brand, AppColors.pink, Color(0xFF4DABF7)],
               opacity: dark ? 0.22 : 0.15,
             ),
           ),

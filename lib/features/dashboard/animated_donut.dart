@@ -36,7 +36,7 @@ class _AnimatedDonutState extends State<AnimatedDonut>
     with TickerProviderStateMixin {
   late final _sweep = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 1100),
+    duration: const Duration(milliseconds: 800),
   );
   late final _select = AnimationController(
     vsync: this,

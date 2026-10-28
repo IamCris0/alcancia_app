@@ -20,6 +20,17 @@ Future<void> showCelebrations(
     await _show(context, _MilestoneCard(text: result.milestone!));
     if (!context.mounted) return;
   }
+  if (result.leveledUp &&
+      stageForLevel(result.levelBefore) < stageForLevel(result.levelAfter)) {
+    await _show(
+      context,
+      _EvolutionCard(
+        from: stageForLevel(result.levelBefore),
+        to: stageForLevel(result.levelAfter),
+      ),
+    );
+    if (!context.mounted) return;
+  }
   if (result.leveledUp) {
     final accessory = accessoryUnlockedAt(result.levelAfter);
     // Se pone el accesorio nuevo automáticamente: es la sorpresa.
@@ -147,11 +158,11 @@ class _LevelUpCard extends StatelessWidget {
         Container(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
               decoration: BoxDecoration(
-                gradient: AppColors.fabGradient,
+                gradient: LinearGradient(colors: tierFor(level).colors),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                'Nivel $level',
+                'Nivel $level · ${tierFor(level).label}',
                 style: theme.textTheme.titleLarge?.copyWith(
                   color: Colors.white,
                 ),
@@ -333,6 +344,92 @@ class _MilestoneCard extends StatelessWidget {
           textAlign: TextAlign.center,
           style: theme.textTheme.headlineSmall,
         ).animate(delay: 200.ms).fadeIn().slideY(begin: 0.4),
+      ],
+    );
+  }
+}
+
+/// Evolución: la forma anterior brilla, destello blanco y aparece la nueva.
+class _EvolutionCard extends ConsumerStatefulWidget {
+  const _EvolutionCard({required this.from, required this.to});
+
+  final int from;
+  final int to;
+
+  @override
+  ConsumerState<_EvolutionCard> createState() => _EvolutionCardState();
+}
+
+class _EvolutionCardState extends ConsumerState<_EvolutionCard> {
+  bool _evolved = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Future<void>.delayed(const Duration(milliseconds: 1300), () {
+      if (mounted) setState(() => _evolved = true);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final style = ref.watch(mascotProvider).species.style;
+    return _CardShell(
+      children: [
+        Text(
+          _evolved ? '¡EVOLUCIONÓ!' : '¿Qué está pasando…?',
+          style: theme.textTheme.labelLarge?.copyWith(
+            color: AppColors.brand,
+            letterSpacing: 1.5,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: 170,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 500),
+            transitionBuilder: (child, anim) => FadeTransition(
+              opacity: anim,
+              child: ScaleTransition(
+                scale: Tween(begin: 0.4, end: 1.0).animate(
+                  CurvedAnimation(parent: anim, curve: Curves.elasticOut),
+                ),
+                child: child,
+              ),
+            ),
+            child: _evolved
+                ? MyMascot(
+                    key: const ValueKey('new'),
+                    stage: widget.to,
+                    mood: MascotMood.celebrating,
+                    size: 160,
+                    interactive: false,
+                  )
+                : MyMascot(
+                        key: const ValueKey('old'),
+                        stage: widget.from,
+                        size: 150,
+                        interactive: false,
+                      )
+                      .animate(onPlay: (c) => c.repeat(reverse: true))
+                      .shimmer(duration: 400.ms, color: Colors.white)
+                      .scaleXY(end: 1.06, duration: 300.ms),
+          ),
+        ),
+        const SizedBox(height: 8),
+        AnimatedOpacity(
+          duration: const Duration(milliseconds: 300),
+          opacity: _evolved ? 1 : 0,
+          child: Text(
+            style.isCreature
+                ? '¡Ahora es ${style.formName(widget.to)}!'
+                : '¡Tu mascota alcanzó la etapa ${widget.to}!',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.headlineSmall,
+          ),
+        ),
       ],
     );
   }

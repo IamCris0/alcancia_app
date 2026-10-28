@@ -49,8 +49,10 @@ class _MascotSheetState extends ConsumerState<_MascotSheet> {
         children: [
           Text('Tu mascota', style: theme.textTheme.titleLarge),
           const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 10,
+            runSpacing: 10,
             children: [
               for (final s in MascotSpecies.values)
                 Pressable(

@@ -15,6 +15,7 @@ import '../movements/movements_view.dart';
 import 'charts.dart';
 import 'month_summary.dart';
 import 'progress_strip.dart';
+import '../gamification/daily_chest.dart';
 import '../recurring/upcoming_card.dart';
 
 String greeting() {
@@ -62,8 +63,8 @@ class DashboardView extends ConsumerWidget {
 
     var i = 0;
     Widget enter(Widget w) => w
-        .animate(delay: (70 * i++).ms)
-        .fadeIn(duration: 380.ms)
+        .animate(delay: (40 * i++).ms)
+        .fadeIn(duration: 240.ms)
         .slideY(begin: 0.08, curve: Curves.easeOutCubic);
 
     return SafeArea(
@@ -80,6 +81,7 @@ class DashboardView extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           enter(ProgressChips(onTap: onOpenProfile)),
+          const DailyChestCard(),
           const UpcomingCard(),
           section('Mis cuentas'),
           enter(AccountsStrip(accounts: accounts)),

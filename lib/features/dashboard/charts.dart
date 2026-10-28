@@ -269,7 +269,7 @@ class DailyExpenseChart extends ConsumerWidget {
         tween: Tween(begin: 0, end: 1),
         duration: MediaQuery.disableAnimationsOf(context)
             ? Duration.zero
-            : const Duration(milliseconds: 1300),
+            : const Duration(milliseconds: 900),
         curve: Curves.easeInOutCubic,
         builder: (context, t, child) =>
             ClipRect(clipper: _RevealClipper(t), child: child),

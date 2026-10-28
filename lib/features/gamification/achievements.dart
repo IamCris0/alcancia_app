@@ -20,6 +20,7 @@ class GameStats {
     this.debtsSettled = 0,
     this.recurrings = 0,
     this.backups = 0,
+    this.chests = 0,
   });
 
   final int totalMovements;
@@ -39,6 +40,7 @@ class GameStats {
   final int debtsSettled;
   final int recurrings;
   final int backups;
+  final int chests;
 }
 
 class AchievementDef {
@@ -234,6 +236,69 @@ final achievementDefs = <AchievementDef>[
     test: (s) => s.backups >= 1,
   ),
   AchievementDef(
+    key: 'racha_14',
+    title: 'Dos semanas',
+    description: 'Mantén una racha de 14 días.',
+    icon: Icons.local_fire_department_rounded,
+    color: const Color(0xFFFF6B3D),
+    xp: 120,
+    test: (s) => s.bestStreak >= 14,
+  ),
+  AchievementDef(
+    key: 'racha_60',
+    title: 'Hábito de acero',
+    description: 'Mantén una racha de 60 días.',
+    icon: Icons.shield_moon_rounded,
+    color: const Color(0xFF845EF7),
+    xp: 500,
+    test: (s) => s.bestStreak >= 60,
+  ),
+  AchievementDef(
+    key: 'racha_100',
+    title: 'Centenario',
+    description: 'Mantén una racha de 100 días.',
+    icon: Icons.diamond_rounded,
+    color: const Color(0xFF4DABF7),
+    xp: 1000,
+    test: (s) => s.bestStreak >= 100,
+  ),
+  AchievementDef(
+    key: 'mov_250',
+    title: 'Archivista',
+    description: 'Registra 250 movimientos.',
+    icon: Icons.inventory_2_rounded,
+    color: const Color(0xFF12B886),
+    xp: 250,
+    test: (s) => s.totalMovements >= 250,
+  ),
+  AchievementDef(
+    key: 'mov_500',
+    title: 'Enciclopedia',
+    description: 'Registra 500 movimientos.',
+    icon: Icons.auto_stories_rounded,
+    color: const Color(0xFF7C5CFF),
+    xp: 500,
+    test: (s) => s.totalMovements >= 500,
+  ),
+  AchievementDef(
+    key: 'cofres_7',
+    title: 'Buscatesoros',
+    description: 'Abre 7 cofres diarios.',
+    icon: Icons.redeem_rounded,
+    color: const Color(0xFFFFC233),
+    xp: 60,
+    test: (s) => s.chests >= 7,
+  ),
+  AchievementDef(
+    key: 'cofres_30',
+    title: 'Pirata del ahorro',
+    description: 'Abre 30 cofres diarios.',
+    icon: Icons.sailing_rounded,
+    color: const Color(0xFFE8590C),
+    xp: 200,
+    test: (s) => s.chests >= 30,
+  ),
+  AchievementDef(
     key: 'nivel_5',
     title: 'Estratega',
     description: 'Llega al nivel 5.',
@@ -242,6 +307,33 @@ final achievementDefs = <AchievementDef>[
     // Sin XP: evita que un logro de nivel suba más el nivel en cadena.
     xp: 0,
     test: (s) => s.level >= 5,
+  ),
+  AchievementDef(
+    key: 'nivel_10',
+    title: 'Evolución final',
+    description: 'Llega al nivel 10: tu mascota alcanza su última forma.',
+    icon: Icons.auto_awesome_rounded,
+    color: const Color(0xFFFF7EB3),
+    xp: 0,
+    test: (s) => s.level >= 10,
+  ),
+  AchievementDef(
+    key: 'nivel_15',
+    title: 'Platino',
+    description: 'Llega al nivel 15.',
+    icon: Icons.workspace_premium_rounded,
+    color: const Color(0xFF66D9E8),
+    xp: 0,
+    test: (s) => s.level >= 15,
+  ),
+  AchievementDef(
+    key: 'nivel_20',
+    title: 'Diamante',
+    description: 'Llega al nivel 20.',
+    icon: Icons.diamond_outlined,
+    color: const Color(0xFF9775FA),
+    xp: 0,
+    test: (s) => s.level >= 20,
   ),
 ];
 

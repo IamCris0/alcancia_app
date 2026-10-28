@@ -13,7 +13,7 @@ class AppCard extends StatelessWidget {
     this.onTap,
     this.gradient,
     this.color,
-    this.radius = 24,
+    this.radius = 26,
   });
 
   final Widget child;
@@ -27,21 +27,54 @@ class AppCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final dark = Theme.of(context).brightness == Brightness.dark;
+    final r = BorderRadius.circular(radius);
+    final base = color ?? scheme.surfaceContainerLow;
     final card = Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: gradient == null ? (color ?? scheme.surfaceContainerLow) : null,
-        gradient: gradient,
-        borderRadius: BorderRadius.circular(radius),
+        // Superficie con un leve degradado tintado por la marca: da volumen
+        // sin verse "plana".
+        gradient:
+            gradient ??
+            LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                base,
+                Color.alphaBlend(
+                  AppColors.brand.withValues(alpha: dark ? 0.06 : 0.035),
+                  base,
+                ),
+              ],
+            ),
+        borderRadius: r,
         boxShadow: softShadow(context),
-        border: dark && gradient == null
-            ? Border.all(color: Colors.white.withValues(alpha: 0.06))
-            : null,
+        border: Border.all(
+          color: gradient != null
+              ? Colors.white.withValues(alpha: 0.22)
+              : dark
+              ? Colors.white.withValues(alpha: 0.07)
+              : Colors.white.withValues(alpha: 0.9),
+        ),
       ),
+      // Brillo superior (efecto vidrio) en las tarjetas de color.
+      foregroundDecoration: gradient == null
+          ? null
+          : BoxDecoration(
+              borderRadius: r,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: const Alignment(0.2, 0.4),
+                colors: [
+                  Colors.white.withValues(alpha: 0.16),
+                  Colors.white.withValues(alpha: 0),
+                ],
+              ),
+            ),
       child: child,
     );
     return onTap == null
         ? card
-        : Pressable(onTap: onTap, scale: 0.98, child: card);
+        : Pressable(onTap: onTap, scale: 0.97, child: card);
   }
 }

@@ -18,7 +18,16 @@ void main() {
             children: [
               for (final s in MascotSpecies.values)
                 for (final m in MascotMood.values)
-                  MascotView(species: s, mood: m, size: 60),
+                  for (final stage in [1, 3])
+                    MascotView(
+                      species: s,
+                      mood: m,
+                      stage: stage,
+                      accessory:
+                          MascotAccessory.values[(s.index + m.index) %
+                              MascotAccessory.values.length],
+                      size: 40,
+                    ),
             ],
           ),
         ),
@@ -28,8 +37,12 @@ void main() {
     for (var i = 0; i < 20; i++) {
       await tester.pump(const Duration(milliseconds: 300));
     }
-    // Tocar dispara salto + moneda.
-    await tester.tap(find.byType(MascotView).first);
+    // Gestos: toque, doble toque (giro + corazones) y mantener (caricia).
+    final first = find.byType(MascotView).first;
+    await tester.tap(first);
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.tap(first);
+    await tester.longPress(first);
     for (var i = 0; i < 6; i++) {
       await tester.pump(const Duration(milliseconds: 200));
     }

@@ -94,9 +94,24 @@ void main() {
     test('accesorios por nivel', () {
       expect(isAccessoryUnlocked(MascotAccessory.bow, 1), isFalse);
       expect(isAccessoryUnlocked(MascotAccessory.bow, 2), isTrue);
-      expect(isAccessoryUnlocked(MascotAccessory.crown, 7), isFalse);
+      expect(isAccessoryUnlocked(MascotAccessory.crown, 11), isFalse);
       expect(accessoryUnlockedAt(4), MascotAccessory.glasses);
-      expect(accessoryUnlockedAt(3), isNull);
+      expect(accessoryUnlockedAt(3), MascotAccessory.flower);
+      expect(accessoryUnlockedAt(5), isNull);
+      expect(isAccessoryUnlocked(MascotAccessory.halo, 19), isFalse);
     });
+  });
+
+  test('rangos y etapas por nivel', () {
+    expect(tierFor(1), LevelTier.bronze);
+    expect(tierFor(5), LevelTier.silver);
+    expect(tierFor(12), LevelTier.gold);
+    expect(tierFor(20), LevelTier.diamond);
+    expect(stageForLevel(4), 1);
+    expect(stageForLevel(5), 2);
+    expect(stageForLevel(10), 3);
+    expect(levelTitles, hasLength(20));
+    expect(MascotSpecies.spark.style.formName(3), 'Tormentix');
+    expect(MascotSpecies.pig.style.isCreature, isFalse);
   });
 }

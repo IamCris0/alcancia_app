@@ -5,6 +5,18 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 ## [Unreleased]
 
 ### Added
+- Diseño v3:
+  - 4 criaturas elementales originales (Eléctrico, Planta, Fuego, Agua) con
+    3 evoluciones por nivel (5 y 10), rasgos nuevos y aura; celebración de
+    evolución. Animales más "animales" (sin ranura de alcancía).
+  - Gestos en la mascota: toque (salto), doble toque (giro + corazones),
+    mantener (caricia) y mirada que sigue al dedo; bostezos de noche y
+    estiramientos.
+  - 20 niveles con títulos y rangos (Bronce → Diamante); 9 accesorios.
+  - Cofre diario con XP al azar y bono por racha; 10 logros nuevos.
+  - Temas de color (6 paletas) y modo claro/oscuro/sistema.
+  - Transición de apertura tipo iris y tarjetas rediseñadas.
+  - Animaciones más ágiles en toda la app.
 - Fase 5 (datos y seguridad):
   - Respaldo completo (todas las tablas + preferencias) en JSON: compartir,
     guardar en el teléfono y restaurar con resumen previo, dentro de una

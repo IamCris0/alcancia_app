@@ -126,11 +126,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         children: [
           Positioned.fill(
             child: AuroraBackground(
-              colors: const [
-                AppColors.brand,
-                AppColors.pink,
-                Color(0xFF4DABF7),
-              ],
+              colors: [AppColors.brand, AppColors.pink, Color(0xFF4DABF7)],
               opacity: dark ? 0.22 : 0.16,
             ),
           ),
@@ -163,7 +159,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 ),
                 Expanded(
                   child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 420),
+                    duration: const Duration(milliseconds: 300),
                     switchInCurve: Curves.easeOutCubic,
                     switchOutCurve: Curves.easeInCubic,
                     transitionBuilder: (child, anim) {
@@ -211,7 +207,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           Center(child: MascotView(species: _species, size: 170))
               .animate()
               .scaleXY(begin: 0.4, duration: 800.ms, curve: Curves.elasticOut)
-              .fadeIn(duration: 300.ms),
+              .fadeIn(duration: 200.ms),
           const SizedBox(height: 24),
           Text(
             '¡Hola! Bienvenido a PlataPets',
@@ -528,6 +524,22 @@ class _PetCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(style.label, style: theme.textTheme.titleMedium),
+            if (style.element != null)
+              Container(
+                margin: const EdgeInsets.only(top: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 2,
+                ),
+                decoration: BoxDecoration(
+                  color: style.bodyDark.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  'Tipo ${style.element} · evoluciona',
+                  style: theme.textTheme.labelSmall,
+                ),
+              ),
           ],
         ),
       ),

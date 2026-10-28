@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/motion/aurora.dart';
 import '../../core/motion/floating_coins.dart';
+import '../gamification/gamification_providers.dart';
 import '../mascot/mascot_providers.dart';
 import '../mascot/mascot_view.dart';
 
@@ -39,14 +40,14 @@ class _SplashPageState extends ConsumerState<SplashPage> {
         _timers.add(Timer(const Duration(milliseconds: 400), widget.onDone));
         return;
       }
-      for (final ms in [850, 1350]) {
+      for (final ms in [650, 1050]) {
         _timers.add(
           Timer(Duration(milliseconds: ms), () {
             if (mounted) setState(() => _react++);
           }),
         );
       }
-      _timers.add(Timer(const Duration(milliseconds: 2300), widget.onDone));
+      _timers.add(Timer(const Duration(milliseconds: 1800), widget.onDone));
     });
   }
 
@@ -82,6 +83,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
                 MascotView(
                       species: mascot.species,
                       accessory: mascot.accessory,
+                      stage: stageForLevel(ref.watch(levelProvider).level),
                       size: 170,
                       reactKey: _react,
                       interactive: false,
@@ -110,7 +112,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
                               letterSpacing: -1,
                             ),
                           )
-                          .animate(delay: (700 + i * 55).ms)
+                          .animate(delay: (500 + i * 40).ms)
                           .fadeIn(duration: 250.ms)
                           .moveY(
                             begin: 24,
@@ -129,8 +131,8 @@ class _SplashPageState extends ConsumerState<SplashPage> {
                         fontWeight: FontWeight.w500,
                       ),
                     )
-                    .animate(delay: 1300.ms)
-                    .fadeIn(duration: 400.ms)
+                    .animate(delay: 1000.ms)
+                    .fadeIn(duration: 240.ms)
                     .slideY(begin: 0.4),
               ],
             ),

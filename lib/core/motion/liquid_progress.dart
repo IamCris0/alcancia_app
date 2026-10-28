@@ -30,7 +30,7 @@ class _LiquidProgressState extends State<LiquidProgress>
   );
   late final _level = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 1400),
+    duration: const Duration(milliseconds: 1000),
   );
   late Animation<double> _levelAnim;
 

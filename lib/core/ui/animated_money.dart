@@ -12,7 +12,7 @@ class AnimatedMoney extends ConsumerWidget {
     super.key,
     this.style,
     this.signed = false,
-    this.duration = const Duration(milliseconds: 900),
+    this.duration = const Duration(milliseconds: 600),
   });
 
   final int cents;

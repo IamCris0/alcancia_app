@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../../core/database/app_database.dart';
 import '../../core/database/gamification_queries.dart';
 import '../../core/database/planning_queries.dart';
@@ -261,6 +263,7 @@ class GamificationService {
       debtsSettled: planning.debtsSettled,
       recurrings: planning.recurrings,
       backups: await db.countXpKeys('backup:'),
+      chests: await db.countXpKeys('chest:'),
     );
   }
 
@@ -268,7 +271,7 @@ class GamificationService {
     final st = await stats(s);
     final unlocked = <AchievementDef>[];
     for (final a in achievementDefs) {
-      if (a.key == 'nivel_5' || !a.test(st)) continue;
+      if (a.key.startsWith('nivel_') || !a.test(st)) continue;
       if (await db.unlockAchievement(a.key)) {
         if (a.xp > 0) await db.awardXp('ach:${a.key}', a.xp, at: _clock());
         unlocked.add(a);
@@ -277,14 +280,45 @@ class GamificationService {
     return unlocked;
   }
 
+  /// Logros de nivel (sin XP para no encadenar subidas).
   Future<List<AchievementDef>> _evaluateLevelAchievements(int level) async {
-    final def = achievementByKey('nivel_5')!;
-    if (def.test(GameStats(level: level)) &&
-        await db.unlockAchievement(def.key)) {
-      return [def];
+    final out = <AchievementDef>[];
+    for (final def in achievementDefs) {
+      if (!def.key.startsWith('nivel_')) continue;
+      if (def.test(GameStats(level: level)) &&
+          await db.unlockAchievement(def.key)) {
+        out.add(def);
+      }
     }
-    return const [];
+    return out;
   }
+
+  /// Cofre diario: una vez al día, XP al azar + bono por racha.
+  Future<({int xp, GamificationResult result})?> openDailyChest({
+    Random? random,
+  }) async {
+    final now = _clock();
+    final key = 'chest:${_ymd(dayOf(now))}';
+    if (await db.countXpKeys(key) > 0) return null;
+    final s = await streak();
+    final xp =
+        10 + (random ?? Random()).nextInt(21) + 5 * s.current.clamp(0, 5);
+    await db.awardXp(key, xp, at: now);
+    final r = await evaluate();
+    return (
+      xp: xp,
+      result: GamificationResult(
+        xpGained: xp + r.xpGained,
+        levelBefore: LevelInfo.fromXp(await db.xpTotal() - xp - r.xpGained)
+            .level,
+        levelAfter: r.levelAfter,
+        unlocked: r.unlocked,
+      ),
+    );
+  }
+
+  Future<bool> chestOpenedToday() async =>
+      await db.countXpKeys('chest:${_ymd(dayOf(_clock()))}') > 0;
 
   Future<BudgetAlert?> _budgetAlert(Movement m, int previousAmount) async {
     if (m.type != MovementType.expense) return null;

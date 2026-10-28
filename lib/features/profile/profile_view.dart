@@ -20,6 +20,7 @@ import '../plans/plans_providers.dart';
 import '../recurring/recurring_page.dart';
 import '../backup/data_page.dart';
 import 'profile_settings.dart';
+import 'theme_sheet.dart';
 
 class ProfileView extends ConsumerWidget {
   const ProfileView({super.key});
@@ -31,8 +32,8 @@ class ProfileView extends ConsumerWidget {
 
     var i = 0;
     Widget enter(Widget w) => w
-        .animate(delay: (70 * i++).ms)
-        .fadeIn(duration: 380.ms)
+        .animate(delay: (40 * i++).ms)
+        .fadeIn(duration: 240.ms)
         .slideY(begin: 0.06, curve: Curves.easeOutCubic);
 
     return SafeArea(
@@ -102,7 +103,10 @@ class _MascotCard extends ConsumerWidget {
                       ),
                     ),
                     Text(
-                      'Compañero de $userName',
+                      '${mascot.species.style.formName(stageForLevel(level.level))}'
+                      '${mascot.species.style.element == null ? '' : ' · ${mascot.species.style.element}'}'
+                      ' · Etapa ${stageForLevel(level.level)}'
+                      '\n${level.title} · compañero de $userName',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: white.withValues(alpha: 0.8),
                       ),
@@ -118,7 +122,7 @@ class _MascotCard extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        'Nivel ${level.level} · ${level.title}',
+                        'Nivel ${level.level} · ${tierFor(level.level).label}',
                         style: theme.textTheme.labelLarge?.copyWith(
                           color: white,
                         ),
@@ -171,7 +175,7 @@ class _XpBar extends StatelessWidget {
       ),
       child: TweenAnimationBuilder<double>(
         tween: Tween(begin: 0, end: progress.clamp(0, 1)),
-        duration: const Duration(milliseconds: 1200),
+        duration: const Duration(milliseconds: 800),
         curve: Curves.easeOutCubic,
         builder: (context, v, _) => FractionallySizedBox(
           alignment: Alignment.centerLeft,
@@ -343,7 +347,7 @@ class _StreakCard extends ConsumerWidget {
                       active: streak.activeDays.contains(d),
                       today: d == today,
                     )
-                    .animate(delay: (50 * i).ms)
+                    .animate(delay: (25 * i).ms)
                     .scaleXY(begin: 0.5, curve: Curves.easeOutBack),
             ],
           ),
@@ -568,6 +572,12 @@ class _SettingsList extends ConsumerWidget {
                     const Scaffold(body: CategoriesView(standalone: true)),
               ),
             ),
+          ),
+          tile(
+            Icons.palette_rounded,
+            'Tema y colores',
+            null,
+            () => showThemeSheet(context),
           ),
           tile(
             Icons.shield_rounded,

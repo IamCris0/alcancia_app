@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 /// desde [center] (p. ej. el botón "+"), con un leve zoom de profundidad.
 Route<T> circularRevealRoute<T>(Widget page, {required Offset center}) {
   return PageRouteBuilder<T>(
-    transitionDuration: const Duration(milliseconds: 560),
-    reverseTransitionDuration: const Duration(milliseconds: 380),
+    transitionDuration: const Duration(milliseconds: 420),
+    reverseTransitionDuration: const Duration(milliseconds: 260),
     pageBuilder: (_, _, _) => page,
     transitionsBuilder: (context, animation, _, child) {
       final size = MediaQuery.sizeOf(context);

@@ -10,6 +10,7 @@ import '../../core/widgets/pickers.dart';
 import '../accounts/account_form.dart';
 import '../accounts/accounts_view.dart';
 import '../gamification/gamification_providers.dart';
+import '../gamification/levels.dart';
 import '../profile/profile_view.dart';
 
 /// Racha y nivel de un vistazo; tocar lleva al perfil.
@@ -75,8 +76,10 @@ class ProgressChips extends ConsumerWidget {
                   width: 30,
                   height: 30,
                   alignment: Alignment.center,
-                  decoration: const BoxDecoration(
-                    gradient: AppColors.fabGradient,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: tierFor(level.level).colors,
+                    ),
                     shape: BoxShape.circle,
                   ),
                   child: Text(
@@ -93,7 +96,7 @@ class ProgressChips extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Nivel ${level.level}',
+                        'Nivel ${level.level} · ${tierFor(level.level).label}',
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w800,
                         ),
@@ -188,7 +191,7 @@ class AccountsStrip extends StatelessWidget {
                   ),
                 ),
               ),
-            ).animate(delay: (60 * i).ms).fadeIn().slideX(begin: 0.2),
+            ).animate(delay: (40 * i).ms).fadeIn().slideX(begin: 0.2),
           SizedBox(
             width: 104,
             child: AppCard(
