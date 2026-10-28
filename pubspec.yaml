@@ -1,4 +1,4 @@
-name: alcancia_app
+name: platapets
 description: "App offline de gestion de dinero con mascota, rachas y logros."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.

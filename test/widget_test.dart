@@ -1,8 +1,8 @@
-import 'package:alcancia_app/app.dart';
-import 'package:alcancia_app/core/database/app_database.dart';
-import 'package:alcancia_app/core/providers.dart';
-import 'package:alcancia_app/features/movements/keypad.dart';
-import 'package:alcancia_app/features/splash/splash_page.dart';
+import 'package:platapets/app.dart';
+import 'package:platapets/core/database/app_database.dart';
+import 'package:platapets/core/providers.dart';
+import 'package:platapets/features/movements/keypad.dart';
+import 'package:platapets/features/splash/splash_page.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +19,17 @@ Future<void> _settle(WidgetTester tester) async {
       () => Future<void>.delayed(const Duration(milliseconds: 50)),
     );
     await tester.pump(const Duration(milliseconds: 400));
+  }
+}
+
+/// Avanza en pasos cortos (I/O real + reloj falso) hasta que aparezca
+/// [finder], con un tope para no colgar el test.
+Future<void> _pumpUntil(WidgetTester tester, Finder finder) async {
+  for (var i = 0; i < 60 && finder.evaluate().isEmpty; i++) {
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 10)),
+    );
+    await tester.pump(const Duration(milliseconds: 16));
   }
 }
 
@@ -39,7 +50,7 @@ Future<(AppDatabase, SharedPreferences)> _launch(
         databaseProvider.overrideWithValue(db),
         showSplashProvider.overrideWithValue(splash),
       ],
-      child: const AlcanciaApp(),
+      child: const PlataPetsApp(),
     ),
   );
   if (!splash) await _settle(tester);
@@ -48,7 +59,9 @@ Future<(AppDatabase, SharedPreferences)> _launch(
 
 Future<void> _shutdown(WidgetTester tester, AppDatabase db) async {
   await tester.pumpWidget(const SizedBox());
-  await tester.pump(Duration.zero);
+  // flutter_animate programa sus retrasos con timers no cancelables:
+  // se deja correr el reloj para que terminen.
+  await tester.pump(const Duration(seconds: 1));
   await tester.runAsync(db.close);
 }
 
@@ -61,12 +74,12 @@ void main() {
   testWidgets('la intro animada da paso al onboarding', (tester) async {
     final (db, _) = await _launch(tester, {}, splash: true);
     await tester.pump(const Duration(milliseconds: 1600));
-    expect(find.text('Tu dinero, bajo control'), findsOneWidget);
+    expect(find.text('Tu dinero, con compañía'), findsOneWidget);
 
     await tester.pump(const Duration(milliseconds: 1000));
     await tester.pump(const Duration(milliseconds: 800));
     expect(find.text('¿Cómo te llamas?'), findsOneWidget);
-    expect(find.text('Tu dinero, bajo control'), findsNothing);
+    expect(find.text('Tu dinero, con compañía'), findsNothing);
 
     await _shutdown(tester, db);
   });
@@ -133,14 +146,28 @@ void main() {
     expect(find.text(r'$12'), findsOneWidget);
 
     await tester.tap(find.text('Guardar'));
-    await tester.pump(const Duration(milliseconds: 600));
+    // Guardar + XP/logros encadenan muchas consultas con I/O real.
+    await _pumpUntil(tester, find.text('Gasto registrado'));
     expect(find.text('Gasto registrado'), findsOneWidget);
+    // La XP exacta depende de la hora (logros "Búho"/"Madrugador").
+    expect(find.textContaining(' XP'), findsWidgets);
     // Confirmación + cierre de la pantalla + animación del saldo.
     await _settle(tester);
     await _settle(tester);
 
+    // Primer movimiento: se desbloquea el logro "Primer paso".
+    expect(find.text('LOGRO DESBLOQUEADO'), findsOneWidget);
+    expect(find.text('Primer paso'), findsOneWidget);
+    // Puede haber más de una celebración seguida: se cierran todas.
+    for (var i = 0; i < 5 && find.text('¡Genial!').evaluate().isNotEmpty; i++) {
+      await tester.tap(find.text('¡Genial!'));
+      await _settle(tester);
+    }
+
     expect(find.text('Nuevo movimiento'), findsNothing);
     expect(find.bySemanticsLabel(r'$38.00'), findsOneWidget);
+    // Racha de 1 día y XP ganada.
+    expect(find.text('1 día'), findsOneWidget);
     // "Recientes" está al final del inicio: hay que desplazarse.
     await tester.scrollUntilVisible(
       find.text(r'−$12.00'),
@@ -168,8 +195,8 @@ void main() {
     final (db, _) = await _launch(tester, {'user_name': 'Ana'});
     for (final (label, title) in [
       ('Movimientos', 'Movimientos'),
-      ('Cuentas', 'Cuentas'),
-      ('Categorías', 'Categorías'),
+      ('Metas', 'Presupuestos'),
+      ('Perfil', 'Logros'),
     ]) {
       await tester.tap(find.bySemanticsLabel(label).first);
       await _settle(tester);

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 
-/// Paleta de Alcancía. Verde = entra dinero, coral = sale, violeta = marca y
+/// Paleta de PlataPets. Verde = entra dinero, coral = sale, violeta = marca y
 /// transferencias, oro = ahorro y monedas.
 class AppColors {
   static const brand = Color(0xFF6C4CF1);

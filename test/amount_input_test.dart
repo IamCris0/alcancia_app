@@ -1,4 +1,4 @@
-import 'package:alcancia_app/features/movements/amount_input.dart';
+import 'package:platapets/features/movements/amount_input.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 AmountInput type(String keys) {

@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
@@ -43,70 +41,60 @@ class FloatingNavBar extends StatelessWidget {
     final theme = Theme.of(context);
     final bottom = MediaQuery.paddingOf(context).bottom;
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(16, 0, 16, 12 + bottom),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(34),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.14),
-              blurRadius: 30,
-              offset: const Offset(0, 10),
+    // Sin BackdropFilter: el desenfoque en vivo sobre contenido animado se
+    // recalculaba en cada frame. Un fondo casi opaco se ve igual de limpio.
+    return RepaintBoundary(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(16, 0, 16, 12 + bottom),
+        child: Container(
+          height: _height,
+          padding: const EdgeInsets.symmetric(horizontal: _hPad),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerLow.withValues(
+              alpha: 0.97,
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(34),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: Container(
-              height: _height,
-              padding: const EdgeInsets.symmetric(horizontal: _hPad),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerLow.withValues(
-                  alpha: 0.82,
-                ),
-                borderRadius: BorderRadius.circular(34),
-                border: Border.all(
-                  color: theme.colorScheme.outlineVariant.withValues(
-                    alpha: 0.3,
+            borderRadius: BorderRadius.circular(34),
+            border: Border.all(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.14),
+                blurRadius: 30,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: LayoutBuilder(
+            builder: (context, c) {
+              final itemW = (c.maxWidth - _addWidth) / 4;
+              double left(int i) => i < 2 ? i * itemW : _addWidth + i * itemW;
+              return Stack(
+                children: [
+                  AnimatedPositioned(
+                    duration: const Duration(milliseconds: 420),
+                    curve: Curves.easeOutBack,
+                    left: left(selected) + 4,
+                    width: itemW - 8,
+                    top: 9,
+                    bottom: 9,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: AppColors.brand.withValues(alpha: 0.13),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              child: LayoutBuilder(
-                builder: (context, c) {
-                  final itemW = (c.maxWidth - _addWidth) / 4;
-                  double left(int i) =>
-                      i < 2 ? i * itemW : _addWidth + i * itemW;
-                  return Stack(
+                  Row(
                     children: [
-                      AnimatedPositioned(
-                        duration: const Duration(milliseconds: 420),
-                        curve: Curves.easeOutBack,
-                        left: left(selected) + 4,
-                        width: itemW - 8,
-                        top: 9,
-                        bottom: 9,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: AppColors.brand.withValues(alpha: 0.13),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          for (final i in [0, 1]) _item(i, itemW),
-                          _AddButton(onAdd: onAdd),
-                          for (final i in [2, 3]) _item(i, itemW),
-                        ],
-                      ),
+                      for (final i in [0, 1]) _item(i, itemW),
+                      _AddButton(onAdd: onAdd),
+                      for (final i in [2, 3]) _item(i, itemW),
                     ],
-                  );
-                },
-              ),
-            ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),

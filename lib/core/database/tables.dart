@@ -44,3 +44,40 @@ class Movements extends Table {
   DateTimeColumn get date => dateTime()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
+
+/// Límite de gasto mensual. `categoryId` nulo = presupuesto general del mes
+/// (solo debe existir uno; lo garantiza `upsertBudget`).
+class Budgets extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get categoryId =>
+      integer().nullable().unique().references(Categories, #id)();
+  IntColumn get amount => integer()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+}
+
+/// Libro de XP ganada. `key` es única para no premiar dos veces lo mismo
+/// (p. ej. `mov:12`, `day:2026-10-11`, `ach:racha_7`). Borrar un movimiento
+/// no quita la XP ya ganada.
+class XpEvents extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get key => text().unique()();
+  IntColumn get amount => integer()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+}
+
+@DataClassName('UnlockedAchievement')
+class Achievements extends Table {
+  TextColumn get key => text()();
+  DateTimeColumn get unlockedAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column<Object>> get primaryKey => {key};
+}
+
+/// Días "congelados": cuentan para la racha aunque no se registró nada.
+class StreakFreezes extends Table {
+  DateTimeColumn get day => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {day};
+}

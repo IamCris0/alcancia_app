@@ -13,7 +13,7 @@ Future<void> main() async {
   runApp(
     ProviderScope(
       overrides: [sharedPrefsProvider.overrideWithValue(prefs)],
-      child: const AlcanciaApp(),
+      child: const PlataPetsApp(),
     ),
   );
 }

@@ -134,7 +134,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               opacity: dark ? 0.22 : 0.16,
             ),
           ),
-          const Positioned.fill(child: FloatingCoins(count: 8, opacity: 0.35)),
+          // Discretas: no deben competir con el texto ni los botones.
+          const Positioned.fill(child: FloatingCoins(count: 6, opacity: 0.18)),
           SafeArea(
             child: Column(
               children: [
@@ -213,7 +214,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               .fadeIn(duration: 300.ms),
           const SizedBox(height: 24),
           Text(
-            '¡Hola! Bienvenido a Alcancía',
+            '¡Hola! Bienvenido a PlataPets',
             textAlign: TextAlign.center,
             style: theme.textTheme.headlineMedium,
           ).animate(delay: 150.ms).fadeIn().slideY(begin: 0.3),

@@ -29,7 +29,6 @@ class HeroCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final mascot = ref.watch(mascotProvider);
-    final reactKey = ref.watch(mascotEventProvider);
     const white = Colors.white;
 
     return Container(
@@ -60,19 +59,6 @@ class HeroCard extends ConsumerWidget {
             ),
             const Positioned.fill(
               child: FloatingCoins(count: 9, opacity: 0.55, seed: 11),
-            ),
-            // Brillo diagonal que cruza la tarjeta cada pocos segundos.
-            Positioned.fill(
-              child: IgnorePointer(
-                child: const SizedBox.expand()
-                    .animate(onPlay: (c) => c.repeat())
-                    .shimmer(
-                      delay: 2500.ms,
-                      duration: 1600.ms,
-                      angle: 0.6,
-                      color: white.withValues(alpha: 0.18),
-                    ),
-              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(22, 22, 10, 20),
@@ -115,12 +101,7 @@ class HeroCard extends ConsumerWidget {
                           ],
                         ),
                       ),
-                      MascotView(
-                        species: mascot.species,
-                        mood: mood,
-                        size: 104,
-                        reactKey: reactKey,
-                      ),
+                      MyMascot(mood: mood, size: 104, reactToEvents: true),
                     ],
                   ),
                   const SizedBox(height: 12),

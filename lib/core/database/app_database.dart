@@ -33,13 +33,23 @@ const _defaultCategories = <_SeedCategory>[
   ('Otros ingresos', CategoryKind.income, 'other', 0xFF868E96),
 ];
 
-@DriftDatabase(tables: [Accounts, Categories, Movements])
+@DriftDatabase(
+  tables: [
+    Accounts,
+    Categories,
+    Movements,
+    Budgets,
+    XpEvents,
+    Achievements,
+    StreakFreezes,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
-    : super(executor ?? driftDatabase(name: 'alcancia'));
+    : super(executor ?? driftDatabase(name: 'platapets'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -49,6 +59,12 @@ class AppDatabase extends _$AppDatabase {
     },
     onUpgrade: (m, from, to) async {
       if (from < 2) await m.createTable(movements);
+      if (from < 3) {
+        await m.createTable(budgets);
+        await m.createTable(xpEvents);
+        await m.createTable(achievements);
+        await m.createTable(streakFreezes);
+      }
     },
     beforeOpen: (_) async {
       await customStatement('PRAGMA foreign_keys = ON');

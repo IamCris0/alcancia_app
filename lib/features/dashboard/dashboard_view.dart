@@ -14,6 +14,7 @@ import '../movements/movement_tile.dart';
 import '../movements/movements_view.dart';
 import 'charts.dart';
 import 'month_summary.dart';
+import 'progress_strip.dart';
 
 String greeting() {
   final h = DateTime.now().hour;
@@ -23,9 +24,14 @@ String greeting() {
 }
 
 class DashboardView extends ConsumerWidget {
-  const DashboardView({super.key, required this.onSeeAll});
+  const DashboardView({
+    super.key,
+    required this.onSeeAll,
+    required this.onOpenProfile,
+  });
 
   final VoidCallback onSeeAll;
+  final VoidCallback onOpenProfile;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -71,7 +77,11 @@ class DashboardView extends ConsumerWidget {
               mood: mood,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
+          enter(ProgressChips(onTap: onOpenProfile)),
+          section('Mis cuentas'),
+          enter(AccountsStrip(accounts: accounts)),
+          const SizedBox(height: 20),
           enter(const MonthSwitcher()),
           const SizedBox(height: 12),
           enter(

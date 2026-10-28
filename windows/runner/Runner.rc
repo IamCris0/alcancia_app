@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.alcancia" "\0"
-            VALUE "FileDescription", "alcancia_app" "\0"
+            VALUE "CompanyName", "com.platapets" "\0"
+            VALUE "FileDescription", "platapets" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "alcancia_app" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.alcancia. All rights reserved." "\0"
-            VALUE "OriginalFilename", "alcancia_app.exe" "\0"
-            VALUE "ProductName", "alcancia_app" "\0"
+            VALUE "InternalName", "platapets" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 com.platapets. All rights reserved." "\0"
+            VALUE "OriginalFilename", "platapets.exe" "\0"
+            VALUE "ProductName", "platapets" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

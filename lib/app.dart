@@ -8,14 +8,14 @@ import 'features/onboarding/onboarding_page.dart';
 import 'features/shell/shell_page.dart';
 import 'features/splash/splash_page.dart';
 
-class AlcanciaApp extends ConsumerStatefulWidget {
-  const AlcanciaApp({super.key});
+class PlataPetsApp extends ConsumerStatefulWidget {
+  const PlataPetsApp({super.key});
 
   @override
-  ConsumerState<AlcanciaApp> createState() => _AlcanciaAppState();
+  ConsumerState<PlataPetsApp> createState() => _PlataPetsAppState();
 }
 
-class _AlcanciaAppState extends ConsumerState<AlcanciaApp> {
+class _PlataPetsAppState extends ConsumerState<PlataPetsApp> {
   bool _splashDone = false;
 
   @override
@@ -36,7 +36,7 @@ class _AlcanciaAppState extends ConsumerState<AlcanciaApp> {
     }
 
     return MaterialApp(
-      title: 'Alcancía',
+      title: 'PlataPets',
       debugShowCheckedModeBanner: false,
       theme: buildTheme(Brightness.light),
       darkTheme: buildTheme(Brightness.dark),

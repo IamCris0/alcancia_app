@@ -8,6 +8,9 @@ enum MascotSpecies { pig, cat, bunny, panda }
 
 enum MascotMood { happy, neutral, worried, sleeping, celebrating }
 
+/// Accesorios que se desbloquean subiendo de nivel.
+enum MascotAccessory { none, bow, glasses, partyHat, crown }
+
 /// Colores y textos de cada especie. Todas comparten el mismo "esqueleto"
 /// (cuerpo, ojos, patas) y cambian orejas, hocico, cola y paleta.
 class SpeciesStyle {
@@ -107,7 +110,10 @@ class MascotView extends StatefulWidget {
     this.reactKey = 0,
     this.onTap,
     this.interactive = true,
+    this.accessory = MascotAccessory.none,
   });
+
+  final MascotAccessory accessory;
 
   final MascotSpecies species;
   final MascotMood mood;
@@ -261,6 +267,7 @@ class _MascotViewState extends State<MascotView> with TickerProviderStateMixin {
           twitch: _twitch.value,
           tap: _tap.value,
           hop: _hop.value,
+          accessory: widget.accessory,
         ),
       ),
     );
@@ -287,7 +294,10 @@ class _MascotPainter extends CustomPainter {
     required this.twitch,
     required this.tap,
     required this.hop,
+    this.accessory = MascotAccessory.none,
   }) : s = species.style;
+
+  final MascotAccessory accessory;
 
   final MascotSpecies species;
   final MascotMood mood;
@@ -345,6 +355,7 @@ class _MascotPainter extends CustomPainter {
     _ears(canvas);
     _body(canvas);
     _face(canvas);
+    _accessory(canvas);
 
     canvas.restore();
 
@@ -826,6 +837,102 @@ class _MascotPainter extends CustomPainter {
     );
   }
 
+  void _accessory(Canvas canvas) {
+    switch (accessory) {
+      case MascotAccessory.none:
+        return;
+      case MascotAccessory.bow:
+        const c = Offset(64, 27);
+        final wing = Paint()..color = const Color(0xFFFF4D6D);
+        for (final dir in [-1.0, 1.0]) {
+          canvas.drawPath(
+            Path()
+              ..moveTo(c.dx, c.dy)
+              ..quadraticBezierTo(
+                c.dx + dir * 4,
+                c.dy - 9,
+                c.dx + dir * 9,
+                c.dy - 5,
+              )
+              ..lineTo(c.dx + dir * 9, c.dy + 5)
+              ..quadraticBezierTo(c.dx + dir * 4, c.dy + 9, c.dx, c.dy)
+              ..close(),
+            wing,
+          );
+        }
+        canvas.drawCircle(c, 2.8, Paint()..color = const Color(0xFFC9184A));
+      case MascotAccessory.glasses:
+        final frame = Paint()
+          ..color = _ink
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.8;
+        for (final ex in [39.0, 61.0]) {
+          canvas.drawCircle(
+            Offset(ex, 50),
+            7,
+            Paint()..color = Colors.white.withValues(alpha: 0.18),
+          );
+          canvas.drawCircle(Offset(ex, 50), 7, frame);
+        }
+        canvas.drawLine(const Offset(46, 49), const Offset(54, 49), frame);
+        canvas.drawLine(const Offset(32, 48), const Offset(23, 45), frame);
+        canvas.drawLine(const Offset(68, 48), const Offset(77, 45), frame);
+      case MascotAccessory.partyHat:
+        final hat = Path()
+          ..moveTo(40, 30)
+          ..lineTo(60, 30)
+          ..lineTo(52, 3)
+          ..close();
+        canvas.drawPath(hat, Paint()..color = const Color(0xFF7C5CFF));
+        canvas.save();
+        canvas.clipPath(hat);
+        final stripe = Paint()
+          ..color = const Color(0xFFFFC233)
+          ..strokeWidth = 3.5;
+        for (final y in [10.0, 19.0, 28.0]) {
+          canvas.drawLine(Offset(30, y + 6), Offset(70, y - 4), stripe);
+        }
+        canvas.restore();
+        canvas.drawCircle(
+          const Offset(52, 3),
+          3.6,
+          Paint()..color = const Color(0xFFFF7EB3),
+        );
+      case MascotAccessory.crown:
+        final crown = Path()
+          ..moveTo(38, 30)
+          ..lineTo(37, 16)
+          ..lineTo(44, 22)
+          ..lineTo(50, 11)
+          ..lineTo(56, 22)
+          ..lineTo(63, 16)
+          ..lineTo(62, 30)
+          ..close();
+        canvas.drawPath(crown, Paint()..color = _gold);
+        canvas.drawPath(
+          crown,
+          Paint()
+            ..color = _goldDark
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 1
+            ..strokeJoin = StrokeJoin.round,
+        );
+        for (final (x, y, color) in [
+          (44.0, 26.0, const Color(0xFFFA5252)),
+          (50.0, 24.5, const Color(0xFF4DABF7)),
+          (56.0, 26.0, const Color(0xFF12B886)),
+        ]) {
+          canvas.drawCircle(Offset(x, y), 1.7, Paint()..color = color);
+        }
+        // Destello que recorre la corona con la respiración.
+        canvas.drawCircle(
+          Offset(40 + breath * 20, 20),
+          1.2,
+          Paint()..color = Colors.white.withValues(alpha: 0.8),
+        );
+    }
+  }
+
   void _zzz(Canvas canvas) {
     for (final (i, size) in [(0, 9.0), (1, 12.0)]) {
       final t = (breath + i * 0.5) % 1;
@@ -890,5 +997,6 @@ class _MascotPainter extends CustomPainter {
       old.look != look ||
       old.twitch != twitch ||
       old.tap != tap ||
-      old.hop != hop;
+      old.hop != hop ||
+      old.accessory != accessory;
 }

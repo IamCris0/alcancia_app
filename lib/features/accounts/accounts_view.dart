@@ -13,7 +13,10 @@ import 'account_form.dart';
 import 'account_type_ui.dart';
 
 class AccountsView extends ConsumerWidget {
-  const AccountsView({super.key});
+  const AccountsView({super.key, this.standalone = false});
+
+  /// Abierta como pantalla propia (desde Perfil): muestra botón de volver.
+  final bool standalone;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,6 +35,7 @@ class AccountsView extends ConsumerWidget {
             children: [
               Row(
                 children: [
+                  if (standalone) const BackButton(),
                   Expanded(
                     child: Text(
                       'Cuentas',

@@ -1,4 +1,4 @@
-# Alcancía — Plan del proyecto
+# PlataPets — Plan del proyecto
 
 App Flutter **offline-first** para gestionar dinero personal: ingresos, gastos, presupuestos, metas y hábitos, con mascota, rachas y animaciones.
 
@@ -68,7 +68,7 @@ App Flutter **offline-first** para gestionar dinero personal: ingresos, gastos, 
 | 6 | Release en GitHub (APK) y, opcional, Play Store |
 
 ## 8. Gestión de GitHub
-- Repo público: `alcancia_app`, licencia **MIT**, README con capturas/GIF.
+- Repo público: `platapets`, licencia **MIT**, README con capturas/GIF.
 - Ramas: `main` (estable) ← `develop` ← `feature/*`. PRs aunque sea solo-dev.
 - Commits: Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`).
 - Issues + Project board (Kanban) con milestones por fase; labels: `feature`, `bug`, `design`, `good first issue`.
