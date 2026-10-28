@@ -34,6 +34,13 @@ String formatMoney(int cents, String currencyCode) {
   ).format(cents / 100);
 }
 
+/// Como [formatMoney] pero siempre con signo: "+$12.00" / "−$12.00".
+String formatSigned(int cents, String currencyCode) {
+  if (cents == 0) return formatMoney(0, currencyCode);
+  final abs = formatMoney(cents.abs(), currencyCode);
+  return cents > 0 ? '+$abs' : '−$abs';
+}
+
 /// Convierte texto escrito por el usuario ("12,5", "1.200.50", "-30") a
 /// centavos. Devuelve null si no es un número válido.
 int? parseMoneyToCents(String input) {

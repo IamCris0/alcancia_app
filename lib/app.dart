@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/providers.dart';
 import 'core/theme.dart';
-import 'features/home/home_page.dart';
 import 'features/onboarding/onboarding_page.dart';
+import 'features/shell/shell_page.dart';
 
 class AlcanciaApp extends ConsumerWidget {
   const AlcanciaApp({super.key});
@@ -17,9 +18,15 @@ class AlcanciaApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: buildTheme(Brightness.light),
       darkTheme: buildTheme(Brightness.dark),
-      home: (name == null || name.isEmpty)
-          ? const OnboardingPage()
-          : const HomePage(),
+      locale: const Locale('es'),
+      supportedLocales: const [Locale('es'), Locale('en')],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      home: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 500),
+        child: (name == null || name.isEmpty)
+            ? const OnboardingPage()
+            : const ShellPage(),
+      ),
     );
   }
 }

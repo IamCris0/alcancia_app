@@ -29,4 +29,6 @@ const appIcons = <String, IconData>{
   'other': Icons.more_horiz_rounded,
 };
 
+const transferIcon = Icons.swap_horiz_rounded;
+
 IconData iconFor(String key) => appIcons[key] ?? Icons.category_rounded;
