@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:platapets/core/database/app_database.dart';
 import 'package:platapets/core/database/gamification_queries.dart';
 import 'package:platapets/features/gamification/gamification_service.dart';
+import 'package:platapets/features/gamification/levels.dart';
 import 'package:platapets/features/gamification/streak.dart';
 
 void main() {
@@ -148,5 +151,22 @@ void main() {
     final again = await service.syncOnStart();
     expect(again.xpGained, 0);
     expect(again.unlocked, isEmpty);
+  });
+
+  test('cofre diario: una vez por día y con bono por racha', () async {
+    await log(MovementType.expense, 100, at: addDays(now, -1));
+    final first = await service.openDailyChest(random: Random(1));
+    expect(first, isNotNull);
+    expect(first!.xp, inInclusiveRange(15, 40));
+    expect(await service.chestOpenedToday(), isTrue);
+    expect(await service.openDailyChest(), isNull);
+    now = addDays(now, 1);
+    expect(await service.chestOpenedToday(), isFalse);
+  });
+
+  test('logros de nivel se desbloquean al subir', () async {
+    await db.awardXp('extra', LevelInfo.fromXp(0).levelStartXp + 4600);
+    final r = await service.evaluate();
+    expect(r.unlocked.map((a) => a.key), containsAll(['nivel_5', 'nivel_10']));
   });
 }

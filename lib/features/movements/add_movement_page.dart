@@ -133,7 +133,7 @@ class _AddMovementPageState extends ConsumerState<AddMovementPage> {
       _result = result;
     });
     await Future<void>.delayed(
-      Duration(milliseconds: result.alert != null ? 1900 : 1400),
+      Duration(milliseconds: result.alert != null ? 1600 : 1100),
     );
     if (mounted) Navigator.of(context).pop(result);
   }

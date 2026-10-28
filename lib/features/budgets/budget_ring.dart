@@ -32,7 +32,7 @@ class BudgetRing extends StatelessWidget {
       tween: Tween(begin: 0, end: ratio),
       duration: MediaQuery.disableAnimationsOf(context)
           ? Duration.zero
-          : const Duration(milliseconds: 1200),
+          : const Duration(milliseconds: 800),
       curve: Curves.easeOutCubic,
       builder: (context, v, child) => SizedBox.square(
         dimension: size,

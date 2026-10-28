@@ -84,7 +84,7 @@ class RecurringPage extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: RecurringTile(details: d),
-              ).animate(delay: (50 * i).ms).fadeIn().slideX(begin: 0.06),
+              ).animate(delay: (25 * i).ms).fadeIn().slideX(begin: 0.06),
           ],
         ),
       ),

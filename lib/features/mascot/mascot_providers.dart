@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers.dart';
+import '../gamification/gamification_providers.dart';
 import 'mascot_view.dart';
 
 class MascotPrefs {
@@ -75,7 +76,11 @@ class MyMascot extends ConsumerWidget {
     this.size = 120,
     this.interactive = true,
     this.reactToEvents = false,
+    this.stage,
   });
+
+  /// Forzar una etapa (si no, la del nivel actual).
+  final int? stage;
 
   final MascotMood mood;
   final double size;
@@ -90,6 +95,7 @@ class MyMascot extends ConsumerWidget {
     return MascotView(
       species: mascot.species,
       accessory: mascot.accessory,
+      stage: stage ?? stageForLevel(ref.watch(levelProvider).level),
       mood: mood,
       size: size,
       interactive: interactive,

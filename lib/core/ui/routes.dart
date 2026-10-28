@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 /// de "crear" (nuevo movimiento).
 Route<T> slideUpRoute<T>(Widget page) {
   return PageRouteBuilder<T>(
-    transitionDuration: const Duration(milliseconds: 420),
-    reverseTransitionDuration: const Duration(milliseconds: 280),
+    transitionDuration: const Duration(milliseconds: 300),
+    reverseTransitionDuration: const Duration(milliseconds: 200),
     pageBuilder: (_, _, _) => page,
     transitionsBuilder: (context, animation, _, child) {
       final curved = CurvedAnimation(

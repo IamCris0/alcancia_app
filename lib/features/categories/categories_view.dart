@@ -118,7 +118,7 @@ class CategoriesView extends ConsumerWidget {
                           ],
                         ),
                       )
-                      .animate(delay: (30 * i).ms)
+                      .animate(delay: (25 * i).ms)
                       .fadeIn(duration: 250.ms)
                       .scaleXY(begin: 0.9, curve: Curves.easeOutBack);
                 },

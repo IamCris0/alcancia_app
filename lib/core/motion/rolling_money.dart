@@ -76,7 +76,7 @@ class _RollingDigit extends StatelessWidget {
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: digit.toDouble()),
-      duration: Duration(milliseconds: 650 + order * 70),
+      duration: Duration(milliseconds: 450 + order * 40),
       curve: Curves.easeOutCubic,
       builder: (context, value, _) => ClipRect(
         child: SizedBox(

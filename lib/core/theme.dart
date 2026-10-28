@@ -1,40 +1,123 @@
 import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 
-/// Paleta de PlataPets. Verde = entra dinero, coral = sale, violeta = marca y
-/// transferencias, oro = ahorro y monedas.
+/// Paletas que el usuario puede elegir (Perfil → Tema).
+enum AppPalette { violeta, oceano, bosque, atardecer, cereza, medianoche }
+
+class PaletteColors {
+  const PaletteColors({
+    required this.label,
+    required this.brand,
+    required this.brandLight,
+    required this.accent,
+    required this.hero,
+  });
+
+  final String label;
+  final Color brand;
+  final Color brandLight;
+  final Color accent;
+  final List<Color> hero;
+}
+
+extension AppPaletteColors on AppPalette {
+  PaletteColors get colors => switch (this) {
+    AppPalette.violeta => const PaletteColors(
+      label: 'Violeta',
+      brand: Color(0xFF6C4CF1),
+      brandLight: Color(0xFF9B7BFF),
+      accent: Color(0xFFFF7EB3),
+      hero: [Color(0xFF5B3FE0), Color(0xFF8B5CF6), Color(0xFFD16BA5)],
+    ),
+    AppPalette.oceano => const PaletteColors(
+      label: 'Océano',
+      brand: Color(0xFF1C7ED6),
+      brandLight: Color(0xFF4DABF7),
+      accent: Color(0xFF3BC9DB),
+      hero: [Color(0xFF1864AB), Color(0xFF1C7ED6), Color(0xFF15AABF)],
+    ),
+    AppPalette.bosque => const PaletteColors(
+      label: 'Bosque',
+      brand: Color(0xFF2B8A3E),
+      brandLight: Color(0xFF51CF66),
+      accent: Color(0xFFC0EB75),
+      hero: [Color(0xFF1B6B32), Color(0xFF2F9E44), Color(0xFF74B816)],
+    ),
+    AppPalette.atardecer => const PaletteColors(
+      label: 'Atardecer',
+      brand: Color(0xFFE8590C),
+      brandLight: Color(0xFFFF922B),
+      accent: Color(0xFFFFD43B),
+      hero: [Color(0xFFC92A2A), Color(0xFFE8590C), Color(0xFFF59F00)],
+    ),
+    AppPalette.cereza => const PaletteColors(
+      label: 'Cereza',
+      brand: Color(0xFFD6336C),
+      brandLight: Color(0xFFF06595),
+      accent: Color(0xFFFFA8A8),
+      hero: [Color(0xFFA61E4D), Color(0xFFD6336C), Color(0xFFF783AC)],
+    ),
+    AppPalette.medianoche => const PaletteColors(
+      label: 'Medianoche',
+      brand: Color(0xFF4263EB),
+      brandLight: Color(0xFF748FFC),
+      accent: Color(0xFFB197FC),
+      hero: [Color(0xFF1B1F4B), Color(0xFF364FC7), Color(0xFF7048E8)],
+    ),
+  };
+}
+
+/// Colores de PlataPets. Verde = entra dinero, coral = sale, oro = ahorro.
+/// Los de marca dependen de la paleta elegida ([use]).
 class AppColors {
-  static const brand = Color(0xFF6C4CF1);
-  static const brandLight = Color(0xFF9B7BFF);
-  static const pink = Color(0xFFFF7EB3);
+  static PaletteColors _p = AppPalette.violeta.colors;
+
+  /// Cambia la paleta activa (lo llama la app al construir el tema).
+  static void use(AppPalette palette) => _p = palette.colors;
+
+  static Color get brand => _p.brand;
+  static Color get brandLight => _p.brandLight;
+  static Color get pink => _p.accent;
+  static Color get transfer => _p.brandLight;
   static const income = Color(0xFF12B886);
   static const expense = Color(0xFFFA5252);
-  static const transfer = Color(0xFF7C5CFF);
   static const savings = Color(0xFFFFC233);
 
-  static const heroGradient = LinearGradient(
+  static LinearGradient get heroGradient => LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF5B3FE0), Color(0xFF8B5CF6), Color(0xFFD16BA5)],
-    stops: [0, 0.55, 1],
+    colors: _p.hero,
+    stops: const [0, 0.55, 1],
   );
 
-  static const fabGradient = LinearGradient(
+  static LinearGradient get fabGradient => LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF7C5CFF), Color(0xFFFF7EB3)],
+    colors: [_p.brandLight, _p.accent],
   );
 }
 
-/// Sombra suave y difusa para tarjetas en modo claro.
+/// Sombra en dos capas (contacto + difusa tintada por la marca).
 List<BoxShadow> softShadow(BuildContext context) =>
     Theme.of(context).brightness == Brightness.dark
-    ? const []
+    ? [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.35),
+          blurRadius: 18,
+          offset: const Offset(0, 8),
+        ),
+      ]
     : [
         BoxShadow(
-          color: const Color(0xFF2A1F5C).withValues(alpha: 0.07),
-          blurRadius: 24,
-          offset: const Offset(0, 8),
+          color: const Color(0xFF1A1033).withValues(alpha: 0.05),
+          blurRadius: 4,
+          offset: const Offset(0, 1),
+        ),
+        BoxShadow(
+          color: AppColors.brand.withValues(alpha: 0.09),
+          blurRadius: 28,
+          spreadRadius: -4,
+          offset: const Offset(0, 12),
         ),
       ];
 

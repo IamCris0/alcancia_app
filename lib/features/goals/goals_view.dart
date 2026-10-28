@@ -83,7 +83,7 @@ class GoalsView extends ConsumerWidget {
                 itemCount: list.length,
                 itemBuilder: (context, i) =>
                     _GoalCard(status: list[i])
-                        .animate(delay: (60 * i).ms)
+                        .animate(delay: (40 * i).ms)
                         .fadeIn()
                         .scaleXY(begin: 0.92, curve: Curves.easeOutBack),
               ),

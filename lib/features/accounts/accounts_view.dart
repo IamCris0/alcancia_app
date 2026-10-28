@@ -134,7 +134,7 @@ class AccountsView extends ConsumerWidget {
                       ],
                     ),
                   ),
-                ).animate(delay: (70 * i).ms).fadeIn().slideX(begin: 0.06),
+                ).animate(delay: (40 * i).ms).fadeIn().slideX(begin: 0.06),
             ],
           );
         },

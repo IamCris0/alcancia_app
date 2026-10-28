@@ -327,8 +327,8 @@ class _MovementsViewState extends ConsumerState<MovementsView> {
                         ],
                       ),
                     )
-                    .animate(delay: (40 * index++).clamp(0, 400).ms)
-                    .fadeIn(duration: 300.ms)
+                    .animate(delay: (25 * index++).clamp(0, 400).ms)
+                    .fadeIn(duration: 200.ms)
                     .slideY(begin: 0.06, curve: Curves.easeOutCubic),
           ),
         ),
@@ -419,6 +419,6 @@ class _EmptyState extends ConsumerWidget {
           ),
         ],
       ),
-    ).animate().fadeIn(duration: 400.ms);
+    ).animate().fadeIn(duration: 240.ms);
   }
 }

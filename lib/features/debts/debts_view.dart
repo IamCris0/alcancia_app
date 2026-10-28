@@ -80,7 +80,7 @@ class DebtsView extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: _DebtCard(status: d),
-              ).animate(delay: (60 * i).ms).fadeIn().slideX(begin: 0.06),
+              ).animate(delay: (40 * i).ms).fadeIn().slideX(begin: 0.06),
           ],
         );
       },

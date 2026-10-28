@@ -56,7 +56,7 @@ class MovementTile extends ConsumerWidget {
                       color: AppColors.transfer.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.swap_horiz_rounded,
                       color: AppColors.transfer,
                     ),
