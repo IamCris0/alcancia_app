@@ -15,6 +15,10 @@ class GameStats {
     this.loggedLate = false,
     this.loggedEarly = false,
     this.level = 1,
+    this.goals = 0,
+    this.goalsDone = 0,
+    this.debtsSettled = 0,
+    this.recurrings = 0,
   });
 
   final int totalMovements;
@@ -29,6 +33,10 @@ class GameStats {
   final bool loggedLate;
   final bool loggedEarly;
   final int level;
+  final int goals;
+  final int goalsDone;
+  final int debtsSettled;
+  final int recurrings;
 }
 
 class AchievementDef {
@@ -177,6 +185,42 @@ final achievementDefs = <AchievementDef>[
     color: const Color(0xFFFFA94D),
     xp: 15,
     test: (s) => s.loggedEarly,
+  ),
+  AchievementDef(
+    key: 'primera_meta',
+    title: 'Soñador',
+    description: 'Crea tu primera meta de ahorro.',
+    icon: Icons.savings_rounded,
+    color: const Color(0xFF4DABF7),
+    xp: 30,
+    test: (s) => s.goals >= 1,
+  ),
+  AchievementDef(
+    key: 'meta_cumplida',
+    title: 'Meta cumplida',
+    description: 'Completa una meta de ahorro.',
+    icon: Icons.emoji_events_rounded,
+    color: const Color(0xFFFFC233),
+    xp: 150,
+    test: (s) => s.goalsDone >= 1,
+  ),
+  AchievementDef(
+    key: 'deuda_saldada',
+    title: 'Cuentas claras',
+    description: 'Salda una deuda por completo.',
+    icon: Icons.handshake_rounded,
+    color: const Color(0xFF12B886),
+    xp: 80,
+    test: (s) => s.debtsSettled >= 1,
+  ),
+  AchievementDef(
+    key: 'piloto_automatico',
+    title: 'Piloto automático',
+    description: 'Configura un movimiento recurrente.',
+    icon: Icons.autorenew_rounded,
+    color: const Color(0xFF845EF7),
+    xp: 30,
+    test: (s) => s.recurrings >= 1,
   ),
   AchievementDef(
     key: 'nivel_5',

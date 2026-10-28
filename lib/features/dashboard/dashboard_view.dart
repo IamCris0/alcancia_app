@@ -15,6 +15,7 @@ import '../movements/movements_view.dart';
 import 'charts.dart';
 import 'month_summary.dart';
 import 'progress_strip.dart';
+import '../recurring/upcoming_card.dart';
 
 String greeting() {
   final h = DateTime.now().hour;
@@ -79,6 +80,7 @@ class DashboardView extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           enter(ProgressChips(onTap: onOpenProfile)),
+          const UpcomingCard(),
           section('Mis cuentas'),
           enter(AccountsStrip(accounts: accounts)),
           const SizedBox(height: 20),

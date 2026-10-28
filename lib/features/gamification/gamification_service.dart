@@ -1,5 +1,6 @@
 import '../../core/database/app_database.dart';
 import '../../core/database/gamification_queries.dart';
+import '../../core/database/planning_queries.dart';
 import 'achievements.dart';
 import 'levels.dart';
 import 'streak.dart';
@@ -31,6 +32,7 @@ class GamificationResult {
     this.alert,
     this.freezeUsed = false,
     this.streak = 0,
+    this.milestone,
   });
 
   static const none = GamificationResult();
@@ -43,8 +45,12 @@ class GamificationResult {
   final bool freezeUsed;
   final int streak;
 
+  /// Hito especial a celebrar (meta cumplida, deuda saldada…).
+  final String? milestone;
+
   bool get leveledUp => levelAfter > levelBefore;
-  bool get hasCelebrations => leveledUp || unlocked.isNotEmpty;
+  bool get hasCelebrations =>
+      leveledUp || unlocked.isNotEmpty || milestone != null;
 }
 
 /// Reglas de XP, rachas, logros y alertas. Separado de la UI y con reloj
@@ -171,6 +177,56 @@ class GamificationService {
   }
 
   /// Llamar al crear un presupuesto (puede desbloquear "Con un plan").
+  static const goalXp = 5;
+  static const maxGoalXpPerDay = 3;
+
+  /// Llamar tras aportar a una meta: XP (con tope diario) y, si se cumplió,
+  /// el hito para celebrar.
+  Future<GamificationResult> onContribution({
+    required int goalId,
+    required int amount,
+    String? completedGoalName,
+  }) async {
+    final now = _clock();
+    var xp = 0;
+    if (amount > 0 &&
+        await db.countXpKeys('goal:', since: dayOf(now)) < maxGoalXpPerDay &&
+        await db.awardXp(
+          'goal:$goalId:${now.microsecondsSinceEpoch}',
+          goalXp,
+          at: now,
+        )) {
+      xp += goalXp;
+    }
+    final r = await evaluate(
+      milestone: completedGoalName == null
+          ? null
+          : '¡Meta "$completedGoalName" cumplida!',
+    );
+    return GamificationResult(
+      xpGained: xp + r.xpGained,
+      levelBefore: r.levelBefore,
+      levelAfter: r.levelAfter,
+      unlocked: r.unlocked,
+      milestone: r.milestone,
+    );
+  }
+
+  /// Revisa logros tras crear presupuestos, metas, deudas o recurrentes.
+  Future<GamificationResult> evaluate({String? milestone}) async {
+    final levelBefore = LevelInfo.fromXp(await db.xpTotal()).level;
+    final unlocked = await _evaluateAchievements(await streak());
+    final levelAfter = LevelInfo.fromXp(await db.xpTotal()).level;
+    final levelUnlocks = await _evaluateLevelAchievements(levelAfter);
+    return GamificationResult(
+      xpGained: unlocked.fold(0, (sum, a) => sum + a.xp),
+      levelBefore: levelBefore,
+      levelAfter: levelAfter,
+      unlocked: [...unlocked, ...levelUnlocks],
+      milestone: milestone,
+    );
+  }
+
   Future<GamificationResult> onBudgetSaved() async {
     final levelBefore = LevelInfo.fromXp(await db.xpTotal()).level;
     final unlocked = await _evaluateAchievements(await streak());
@@ -184,6 +240,7 @@ class GamificationService {
   }
 
   Future<GameStats> stats(StreakInfo s) async {
+    final planning = await db.planningCounts();
     final counts = await db.movementCounts();
     final logs = await db.logTimes();
     return GameStats(
@@ -199,6 +256,10 @@ class GamificationService {
       loggedLate: logs.any((t) => t.hour >= 23),
       loggedEarly: logs.any((t) => t.hour < 7),
       level: LevelInfo.fromXp(await db.xpTotal()).level,
+      goals: planning.goals,
+      goalsDone: planning.goalsDone,
+      debtsSettled: planning.debtsSettled,
+      recurrings: planning.recurrings,
     );
   }
 

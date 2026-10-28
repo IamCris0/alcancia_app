@@ -16,6 +16,10 @@ Future<void> showCelebrations(
   BuildContext context,
   GamificationResult result,
 ) async {
+  if (result.milestone != null) {
+    await _show(context, _MilestoneCard(text: result.milestone!));
+    if (!context.mounted) return;
+  }
   if (result.leveledUp) {
     final accessory = accessoryUnlockedAt(result.levelAfter);
     // Se pone el accesorio nuevo automáticamente: es la sorpresa.
@@ -278,6 +282,58 @@ class AchievementBadge extends StatelessWidget {
             ? Colors.white
             : scheme.onSurfaceVariant.withValues(alpha: 0.5),
       ),
+    );
+  }
+}
+
+/// Hito especial: trofeo que gira y la mascota celebrando.
+class _MilestoneCard extends StatelessWidget {
+  const _MilestoneCard({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return _CardShell(
+      children: [
+        SizedBox(
+          height: 170,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              const Icon(
+                    Icons.emoji_events_rounded,
+                    size: 150,
+                    color: AppColors.savings,
+                  )
+                  .animate()
+                  .scaleXY(
+                    begin: 0.2,
+                    duration: 800.ms,
+                    curve: Curves.elasticOut,
+                  )
+                  .then()
+                  .shimmer(duration: 1400.ms),
+              const Positioned(
+                bottom: 0,
+                right: 10,
+                child: MyMascot(
+                  mood: MascotMood.celebrating,
+                  size: 80,
+                  interactive: false,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          text,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.headlineSmall,
+        ).animate(delay: 200.ms).fadeIn().slideY(begin: 0.4),
+      ],
     );
   }
 }

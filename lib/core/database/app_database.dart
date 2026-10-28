@@ -42,6 +42,11 @@ const _defaultCategories = <_SeedCategory>[
     XpEvents,
     Achievements,
     StreakFreezes,
+    Goals,
+    GoalContributions,
+    Recurrings,
+    Debts,
+    DebtPayments,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -49,7 +54,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'platapets'));
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -64,6 +69,15 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(xpEvents);
         await m.createTable(achievements);
         await m.createTable(streakFreezes);
+      }
+      // v4: solo agrega (no toca datos existentes).
+      if (from < 4) {
+        await m.addColumn(movements, movements.isAuto);
+        await m.createTable(goals);
+        await m.createTable(goalContributions);
+        await m.createTable(recurrings);
+        await m.createTable(debts);
+        await m.createTable(debtPayments);
       }
     },
     beforeOpen: (_) async {

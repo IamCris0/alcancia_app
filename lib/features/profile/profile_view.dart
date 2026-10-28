@@ -16,6 +16,8 @@ import '../gamification/levels.dart';
 import '../gamification/streak.dart';
 import '../mascot/mascot_providers.dart';
 import '../mascot/mascot_view.dart';
+import '../plans/plans_providers.dart';
+import '../recurring/recurring_page.dart';
 import 'profile_settings.dart';
 
 class ProfileView extends ConsumerWidget {
@@ -565,6 +567,38 @@ class _SettingsList extends ConsumerWidget {
                     const Scaffold(body: CategoriesView(standalone: true)),
               ),
             ),
+          ),
+          tile(
+            Icons.event_repeat_rounded,
+            'Recurrentes',
+            'Salario, renta, suscripciones',
+            () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const RecurringPage()),
+            ),
+          ),
+          SwitchListTile(
+            secondary: const Icon(Icons.notifications_active_rounded),
+            title: const Text('Recordatorios'),
+            subtitle: const Text('Racha a las 20:00 y pagos recurrentes'),
+            value: ref.watch(remindersProvider),
+            onChanged: (on) async {
+              final ok = await ref.read(remindersProvider.notifier).set(on);
+              if (!context.mounted) return;
+              if (on && !ok) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Activa las notificaciones de PlataPets en Ajustes '
+                      'del teléfono.',
+                    ),
+                  ),
+                );
+              } else if (ok) {
+                await syncReminders(
+                  ProviderScope.containerOf(context, listen: false),
+                );
+              }
+            },
           ),
           tile(
             Icons.pets_rounded,
