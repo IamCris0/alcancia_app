@@ -1,4 +1,4 @@
-import 'piggy_mascot.dart';
+import 'mascot_view.dart';
 
 /// Estado de ánimo de la mascota según cómo va el mes.
 MascotMood moodFor({required int income, required int expense}) {
@@ -14,4 +14,5 @@ String moodMessage(MascotMood mood) => switch (mood) {
   MascotMood.neutral => 'Registra tus ingresos para ver tu balance.',
   MascotMood.worried => 'Ojo: este mes sale más de lo que entra.',
   MascotMood.sleeping => 'Zzz… registra tu primer movimiento.',
+  MascotMood.celebrating => '¡Lo lograste!',
 };

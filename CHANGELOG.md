@@ -5,6 +5,22 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 ## [Unreleased]
 
 ### Added
+- Motion v2:
+  - 4 mascotas elegibles (cerdito, gatito, conejito, panda) con mirada,
+    parpadeo, orejas y cola animadas, ánimo "celebrando" y reacción al
+    registrar movimientos.
+  - Intro animada (mascota con rebote, monedas, título letra a letra) y
+    arranque nativo de Android con el mismo color.
+  - Onboarding de 3 pasos con transiciones direccionales, carrusel de
+    mascotas con parallax y celebración con confeti.
+  - Revelado circular desde el botón "+", pestañas que se deslizan según la
+    dirección e indicador de la barra que se mueve con rebote.
+  - Fondo aurora y monedas flotantes en la tarjeta principal, saldos con
+    dígitos rodantes, globo de la mascota que se escribe letra a letra.
+  - Dona propia que se dibuja en barrido y línea de gasto que se revela.
+  - Confirmación al guardar con mascota, sello y confeti; skeletons al cargar.
+  - Ícono adaptativo de la app (con soporte de íconos temáticos) y nombre
+    visible "Alcancía".
 - Movimientos: ingresos, gastos y transferencias con teclado numérico propio,
   selección de categoría, cuenta, fecha y nota; editar, borrar y deshacer.
 - Saldos reales por cuenta calculados en SQL (migración de esquema v1 → v2).
