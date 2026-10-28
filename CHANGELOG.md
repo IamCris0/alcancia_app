@@ -5,6 +5,16 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 ## [Unreleased]
 
 ### Added
+- Fase 4 (metas, recurrentes y deudas):
+  - Metas de ahorro con frasco de líquido animado, aportes/retiros, ritmo
+    sugerido por fecha límite y celebración al cumplirlas.
+  - Recurrentes (semanal/mensual/anual, día anclado a fin de mes) que se
+    registran solos o quedan por confirmar en el inicio; no cuentan para la
+    racha si son automáticos.
+  - Deudas "me deben / yo debo" con abonos hasta saldarlas.
+  - Recordatorios locales opcionales: racha a las 20:00 y pagos recurrentes.
+  - Pestaña Metas con Presupuestos, Ahorros y Deudas; 4 logros nuevos.
+  - Esquema v4 con migración aditiva probada sobre una base v3 con datos.
 - Fase 3 (gamificación y presupuestos):
   - Presupuestos mensuales general y por categoría, con anillo y barras
     animadas, gasto diario sugerido y alertas al 80 % y al pasarse.

@@ -115,9 +115,11 @@ extension GamificationQueries on AppDatabase {
   /// Momento en que se creó cada movimiento (la racha mide el hábito de
   /// registrar, no la fecha contable del movimiento).
   Stream<List<DateTime>> watchLogTimes() =>
-      (selectOnly(movements)..addColumns([movements.createdAt])).watch().map(
-        (rows) => [for (final r in rows) r.read(movements.createdAt)!],
-      );
+      (selectOnly(movements)
+            ..addColumns([movements.createdAt])
+            ..where(movements.isAuto.equals(false)))
+          .watch()
+          .map((rows) => [for (final r in rows) r.read(movements.createdAt)!]);
 
   Future<List<DateTime>> logTimes() => watchLogTimes().first;
 

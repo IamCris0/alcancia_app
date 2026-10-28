@@ -25,78 +25,68 @@ class BudgetsView extends ConsumerWidget {
     final month = ref.watch(selectedMonthProvider);
     final budgets = ref.watch(budgetsProvider(month));
 
-    return SafeArea(
-      bottom: false,
-      child: budgets.when(
-        loading: () => const SkeletonList(),
-        error: (e, _) => Center(child: Text('Error: $e')),
-        data: (list) {
-          final general = list.where((b) => b.isGeneral).firstOrNull;
-          final byCategory = list.where((b) => !b.isGeneral).toList();
-          final taken = {for (final b in list) b.categoryId};
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Presupuestos',
-                      style: theme.textTheme.headlineMedium,
-                    ),
-                  ),
-                  FilledButton.tonalIcon(
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size(0, 44),
-                    ),
-                    onPressed: () => showBudgetForm(context, taken: taken),
-                    icon: const Icon(Icons.add_rounded),
-                    label: const Text('Nuevo'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              const MonthSwitcher(),
-              const SizedBox(height: 16),
-              if (general != null)
-                _GeneralCard(
-                  budget: general,
-                  month: month,
-                  onTap: () =>
-                      showBudgetForm(context, existing: general, taken: taken),
-                ).animate().fadeIn().slideY(begin: 0.06)
-              else
-                _GeneralEmpty(
-                  onTap: () => showBudgetForm(context, taken: taken),
-                ).animate().fadeIn(),
-              const SizedBox(height: 24),
-              Text('Por categoría', style: theme.textTheme.titleMedium),
-              const SizedBox(height: 10),
-              if (byCategory.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24),
-                  child: Text(
-                    'Pon un límite a las categorías donde más gastas: '
-                    'Comida, Ocio, Compras…',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+    // Vive dentro de la pestaña Metas (que ya pone título y SafeArea).
+    return budgets.when(
+      loading: () => const SkeletonList(),
+      error: (e, _) => Center(child: Text('Error: $e')),
+      data: (list) {
+        final general = list.where((b) => b.isGeneral).firstOrNull;
+        final byCategory = list.where((b) => !b.isGeneral).toList();
+        final taken = {for (final b in list) b.categoryId};
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 120),
+          children: [
+            Row(
+              children: [
+                const Expanded(child: MonthSwitcher()),
+                const SizedBox(width: 8),
+                FilledButton.tonalIcon(
+                  style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
+                  onPressed: () => showBudgetForm(context, taken: taken),
+                  icon: const Icon(Icons.add_rounded),
+                  label: const Text('Nuevo'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            if (general != null)
+              _GeneralCard(
+                budget: general,
+                month: month,
+                onTap: () =>
+                    showBudgetForm(context, existing: general, taken: taken),
+              ).animate().fadeIn().slideY(begin: 0.06)
+            else
+              _GeneralEmpty(onTap: () => showBudgetForm(context, taken: taken))
+                  .animate()
+                  .fadeIn(),
+            const SizedBox(height: 24),
+            Text('Por categoría', style: theme.textTheme.titleMedium),
+            const SizedBox(height: 10),
+            if (byCategory.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Text(
+                  'Pon un límite a las categorías donde más gastas: '
+                  'Comida, Ocio, Compras…',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
-              for (final (i, b) in byCategory.indexed)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: _CategoryBudgetCard(
-                    budget: b,
-                    onTap: () =>
-                        showBudgetForm(context, existing: b, taken: taken),
-                  ),
-                ).animate(delay: (60 * i).ms).fadeIn().slideX(begin: 0.06),
-            ],
-          );
-        },
-      ),
+              ),
+            for (final (i, b) in byCategory.indexed)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: _CategoryBudgetCard(
+                  budget: b,
+                  onTap: () =>
+                      showBudgetForm(context, existing: b, taken: taken),
+                ),
+              ).animate(delay: (60 * i).ms).fadeIn().slideX(begin: 0.06),
+          ],
+        );
+      },
     );
   }
 }

@@ -62,6 +62,8 @@ Future<void> _shutdown(WidgetTester tester, AppDatabase db) async {
   // flutter_animate programa sus retrasos con timers no cancelables:
   // se deja correr el reloj para que terminen.
   await tester.pump(const Duration(seconds: 1));
+  // Deja terminar consultas que quedaron en curso (arranque de la app).
+  await _settle(tester);
   await tester.runAsync(db.close);
 }
 
@@ -195,7 +197,7 @@ void main() {
     final (db, _) = await _launch(tester, {'user_name': 'Ana'});
     for (final (label, title) in [
       ('Movimientos', 'Movimientos'),
-      ('Metas', 'Presupuestos'),
+      ('Metas', 'Ahorros'),
       ('Perfil', 'Logros'),
     ]) {
       await tester.tap(find.bySemanticsLabel(label).first);

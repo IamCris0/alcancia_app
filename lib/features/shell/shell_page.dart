@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../budgets/budgets_view.dart';
 import '../dashboard/dashboard_view.dart';
 import '../gamification/celebration_dialog.dart';
 import '../gamification/gamification_providers.dart';
 import '../movements/movements_view.dart';
+import '../plans/plans_providers.dart';
+import '../plans/plans_view.dart';
 import '../profile/profile_view.dart';
 import 'floating_nav_bar.dart';
 
@@ -38,7 +39,11 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     super.initState();
     // Al abrir: premiar meses cerrados y logros pendientes.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Primero los recurrentes automáticos vencidos, luego premios.
+      await ref.read(recurringServiceProvider).processDue();
       final result = await ref.read(gamificationServiceProvider).syncOnStart();
+      if (!mounted) return;
+      await syncReminders(ProviderScope.containerOf(context, listen: false));
       if (mounted && result.hasCelebrations) {
         await showCelebrations(context, result);
       }
@@ -61,7 +66,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         onOpenProfile: () => _select(3),
       ),
       const MovementsView(),
-      const BudgetsView(),
+      const PlansView(),
       const ProfileView(),
     ];
     return Scaffold(

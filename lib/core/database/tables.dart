@@ -7,6 +7,12 @@ enum CategoryKind { income, expense }
 /// El orden importa: se guarda como entero y se usa en SQL (0, 1, 2).
 enum MovementType { income, expense, transfer }
 
+/// Cada cuánto se repite un movimiento recurrente.
+enum Frequency { weekly, monthly, yearly }
+
+/// `iOwe`: yo debo; `theyOwe`: me deben.
+enum DebtKind { iOwe, theyOwe }
+
 /// Los montos se guardan en centavos (enteros) para evitar errores de
 /// punto flotante.
 class Accounts extends Table {
@@ -43,6 +49,9 @@ class Movements extends Table {
   TextColumn get note => text().nullable()();
   DateTimeColumn get date => dateTime()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  /// Creado automáticamente por un recurrente: no cuenta para la racha.
+  BoolColumn get isAuto => boolean().withDefault(const Constant(false))();
 }
 
 /// Límite de gasto mensual. `categoryId` nulo = presupuesto general del mes
@@ -80,4 +89,64 @@ class StreakFreezes extends Table {
 
   @override
   Set<Column<Object>> get primaryKey => {day};
+}
+
+/// Meta de ahorro: un apartado virtual (no mueve el saldo de las cuentas).
+class Goals extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text().withLength(min: 1, max: 40)();
+  IntColumn get target => integer()();
+  TextColumn get iconKey => text()();
+  IntColumn get colorValue => integer()();
+  DateTimeColumn get deadline => dateTime().nullable()();
+  DateTimeColumn get completedAt => dateTime().nullable()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+}
+
+/// Aporte (positivo) o retiro (negativo) a una meta.
+class GoalContributions extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get goalId => integer().references(Goals, #id)();
+  IntColumn get amount => integer()();
+  DateTimeColumn get date => dateTime()();
+}
+
+/// Movimiento que se repite (suscripciones, salario, renta…).
+class Recurrings extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text().withLength(min: 1, max: 40)();
+  IntColumn get type => intEnum<MovementType>()();
+  IntColumn get amount => integer()();
+  IntColumn get accountId => integer().references(Accounts, #id)();
+  IntColumn get categoryId =>
+      integer().nullable().references(Categories, #id)();
+  IntColumn get frequency => intEnum<Frequency>()();
+
+  /// Primera fecha; ancla el día del mes para las siguientes.
+  DateTimeColumn get startDate => dateTime()();
+
+  /// Próxima ocurrencia pendiente.
+  DateTimeColumn get nextDate => dateTime()();
+
+  /// Si se registra solo al llegar la fecha (si no, queda pendiente).
+  BoolColumn get autoRegister => boolean().withDefault(const Constant(false))();
+  BoolColumn get active => boolean().withDefault(const Constant(true))();
+}
+
+class Debts extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get person => text().withLength(min: 1, max: 40)();
+  IntColumn get kind => intEnum<DebtKind>()();
+  IntColumn get amount => integer()();
+  TextColumn get note => text().nullable()();
+  DateTimeColumn get dueDate => dateTime().nullable()();
+  DateTimeColumn get settledAt => dateTime().nullable()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+}
+
+class DebtPayments extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get debtId => integer().references(Debts, #id)();
+  IntColumn get amount => integer()();
+  DateTimeColumn get date => dateTime()();
 }

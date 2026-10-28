@@ -17,6 +17,8 @@ import '../gamification/celebration_dialog.dart';
 import '../gamification/gamification_service.dart';
 import '../mascot/mascot_providers.dart';
 import '../mascot/mascot_view.dart';
+import '../plans/plans_providers.dart';
+import '../recurring/recurring_page.dart';
 import 'add_movement_page.dart';
 import 'movement_tile.dart';
 
@@ -44,6 +46,9 @@ Future<void> openMovement(
         ? slideUpRoute(page)
         : circularRevealRoute(page, center: origin),
   );
+  if (result != null && context.mounted) {
+    await syncReminders(ProviderScope.containerOf(context, listen: false));
+  }
   if (result != null && result.hasCelebrations && context.mounted) {
     await showCelebrations(context, result);
   }
@@ -118,6 +123,15 @@ class _MovementsViewState extends ConsumerState<MovementsView> {
                         'Movimientos',
                         style: theme.textTheme.headlineMedium,
                       ),
+                    ),
+                    IconButton(
+                      tooltip: 'Recurrentes',
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const RecurringPage(),
+                        ),
+                      ),
+                      icon: const Icon(Icons.event_repeat_rounded),
                     ),
                     IconButton.filledTonal(
                       tooltip: _searching ? 'Cerrar búsqueda' : 'Buscar',
