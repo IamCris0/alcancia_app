@@ -5,6 +5,16 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 ## [Unreleased]
 
 ### Added
+- Fase 5 (datos y seguridad):
+  - Respaldo completo (todas las tablas + preferencias) en JSON: compartir,
+    guardar en el teléfono y restaurar con resumen previo, dentro de una
+    transacción.
+  - Exportar movimientos a CSV (compatible con Excel).
+  - Reporte PDF del mes: resumen, gastos por categoría, presupuestos y
+    movimientos.
+  - Bloqueo con PIN (hash con sal) y huella/rostro; al abrir y al volver
+    tras 30 s; espera de 30 s tras 5 intentos fallidos.
+  - Logro "Precavido" por el primer respaldo y aviso si pasan 30 días.
 - Fase 4 (metas, recurrentes y deudas):
   - Metas de ahorro con frasco de líquido animado, aportes/retiros, ritmo
     sugerido por fecha límite y celebración al cumplirlas.

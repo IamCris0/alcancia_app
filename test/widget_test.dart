@@ -2,6 +2,8 @@ import 'package:platapets/app.dart';
 import 'package:platapets/core/database/app_database.dart';
 import 'package:platapets/core/providers.dart';
 import 'package:platapets/features/movements/keypad.dart';
+import 'package:platapets/features/security/app_lock.dart';
+import 'package:platapets/features/security/lock_screen.dart';
 import 'package:platapets/features/splash/splash_page.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
@@ -204,6 +206,39 @@ void main() {
       await _settle(tester);
       expect(find.text(title), findsWidgets);
     }
+    await _shutdown(tester, db);
+  });
+
+  testWidgets('con PIN la app arranca bloqueada y se abre con el correcto', (
+    tester,
+  ) async {
+    final (db, _) = await _launch(tester, {
+      'user_name': 'Ana',
+      'pin_salt': 'sal',
+      'pin_hash': hashPin('1234', 'sal'),
+    });
+    expect(find.byType(LockScreen), findsOneWidget);
+
+    Future<void> type(String pin) async {
+      for (final d in pin.split('')) {
+        await tester.tap(
+          find.descendant(of: find.byType(PinPad), matching: find.text(d)),
+        );
+        await tester.pump();
+      }
+    }
+
+    await type('1239');
+    await _pumpUntil(tester, find.text('PIN incorrecto'));
+    expect(find.text('PIN incorrecto'), findsOneWidget);
+    expect(find.byType(LockScreen), findsOneWidget);
+
+    await type('1234');
+    await _pumpUntil(tester, find.text('¡Hola de nuevo!'));
+    await _settle(tester);
+    expect(find.byType(LockScreen), findsNothing);
+    expect(find.text('Saldo total'), findsOneWidget);
+
     await _shutdown(tester, db);
   });
 }

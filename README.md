@@ -21,7 +21,8 @@ App móvil **100 % offline** para gestionar tu dinero: ingresos, gastos, presupu
 - [x] 4 mascotas animadas, intro y motion graphics
 - [x] Presupuestos, rachas, XP, niveles, accesorios y logros
 - [x] Metas de ahorro, recurrentes, deudas y recordatorios
-- [ ] Respaldo/exportación, PIN y reportes
+- [x] Respaldo/restauración, CSV, reporte PDF y bloqueo con PIN/huella
+- [ ] Widgets de inicio, más idiomas y publicación
 
 ## Desarrollo
 Requisitos: [Flutter](https://docs.flutter.dev/get-started/install) estable.

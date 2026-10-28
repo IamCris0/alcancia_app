@@ -18,6 +18,7 @@ import '../mascot/mascot_providers.dart';
 import '../mascot/mascot_view.dart';
 import '../plans/plans_providers.dart';
 import '../recurring/recurring_page.dart';
+import '../backup/data_page.dart';
 import 'profile_settings.dart';
 
 class ProfileView extends ConsumerWidget {
@@ -567,6 +568,14 @@ class _SettingsList extends ConsumerWidget {
                     const Scaffold(body: CategoriesView(standalone: true)),
               ),
             ),
+          ),
+          tile(
+            Icons.shield_rounded,
+            'Datos y seguridad',
+            'Respaldo, exportar, reporte PDF y PIN',
+            () => Navigator.of(
+              context,
+            ).push(MaterialPageRoute<void>(builder: (_) => const DataPage())),
           ),
           tile(
             Icons.event_repeat_rounded,

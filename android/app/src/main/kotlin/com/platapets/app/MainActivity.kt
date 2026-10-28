@@ -1,5 +1,6 @@
 package com.platapets.app
 
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 
-class MainActivity : FlutterActivity()
+// FragmentActivity: requerido por local_auth (huella / rostro).
+class MainActivity : FlutterFragmentActivity()

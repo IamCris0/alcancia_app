@@ -260,6 +260,7 @@ class GamificationService {
       goalsDone: planning.goalsDone,
       debtsSettled: planning.debtsSettled,
       recurrings: planning.recurrings,
+      backups: await db.countXpKeys('backup:'),
     );
   }
 

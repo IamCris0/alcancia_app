@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/providers.dart';
 import 'core/theme.dart';
 import 'features/onboarding/onboarding_page.dart';
+import 'features/security/lock_screen.dart';
 import 'features/shell/shell_page.dart';
 import 'features/splash/splash_page.dart';
 
@@ -32,7 +33,7 @@ class _PlataPetsAppState extends ConsumerState<PlataPetsApp> {
     } else if (name == null || name.isEmpty) {
       content = const OnboardingPage(key: ValueKey('onboarding'));
     } else {
-      content = const ShellPage(key: ValueKey('shell'));
+      content = const LockGate(key: ValueKey('shell'), child: ShellPage());
     }
 
     return MaterialApp(
