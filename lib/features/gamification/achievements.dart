@@ -19,6 +19,7 @@ class GameStats {
     this.goalsDone = 0,
     this.debtsSettled = 0,
     this.recurrings = 0,
+    this.backups = 0,
   });
 
   final int totalMovements;
@@ -37,6 +38,7 @@ class GameStats {
   final int goalsDone;
   final int debtsSettled;
   final int recurrings;
+  final int backups;
 }
 
 class AchievementDef {
@@ -221,6 +223,15 @@ final achievementDefs = <AchievementDef>[
     color: const Color(0xFF845EF7),
     xp: 30,
     test: (s) => s.recurrings >= 1,
+  ),
+  AchievementDef(
+    key: 'precavido',
+    title: 'Precavido',
+    description: 'Haz tu primer respaldo de datos.',
+    icon: Icons.cloud_done_rounded,
+    color: const Color(0xFF4DABF7),
+    xp: 40,
+    test: (s) => s.backups >= 1,
   ),
   AchievementDef(
     key: 'nivel_5',

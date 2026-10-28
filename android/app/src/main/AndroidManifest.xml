@@ -2,6 +2,8 @@
     <!-- Recordatorios locales (pagos recurrentes y racha). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- Desbloqueo con huella o rostro. -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
     <application
         android:label="PlataPets"
         android:name="${applicationName}"
